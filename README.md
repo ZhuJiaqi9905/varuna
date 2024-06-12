@@ -21,6 +21,7 @@ pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp
 To install, clone this repository, cd into it and run
 ~~~~
 python setup.py install
+需要拷贝genschedule文件
 ~~~~
 ## Running
 

@@ -141,7 +141,7 @@ class Pipeline:
             handle, tensor = recv_handles.get()
             handle.wait()
             self.acts_queue.put(tensor)
-        del acts_tensor
+        # del acts_tensor
     
     def grads_receiver(self):
         chunks = len(self.batches)
@@ -166,7 +166,7 @@ class Pipeline:
             handle, tensor = recv_handles.get()
             handle.wait()
             self.grads_queue.put(tensor)
-        del grads_tensor
+        # del grads_tensor
 
     def acts_sender(self):
         count = 0

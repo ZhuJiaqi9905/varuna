@@ -106,7 +106,7 @@ def parse_args():
                              "program/script to be launched in parallel, "
                              "followed by all the arguments for the "
                              "training script")
-
+    parser.add_argument("--ssh_port", type=int, default=22)
     # rest from the training program
     parser.add_argument('training_script_args', nargs=REMAINDER)
     return parser.parse_args()
@@ -173,6 +173,7 @@ if __name__ == "__main__":
             # print("launch cmd is ", cmd)
         else:
             cmd = ["ssh"]
+            cmd.append(f"-p {args.ssh_port}")
             cmd.append(machine)
             cmd.append(f"echo \"{launch_cmd}\" > launch_varuna.sh; ")
             cmd.append(f"{HEARTBEAT_IP_ENV_VAR}={args.manager_ip}") 
