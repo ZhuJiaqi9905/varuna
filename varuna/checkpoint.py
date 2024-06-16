@@ -83,8 +83,6 @@ def write_varuna_checkpoint(varuna_model, global_store, step, tempdir=None, shar
         global_tracker = get_global_ckpt_tracker(global_store, rank, step)
         with open(global_tracker,"w") as f:
             f.write(str(param_count))
-        print(f"local_tracker: {local_tracker}, global_tracker: {global_tracker}")
-    print("in here")
     return ckpt_future
 
 
