@@ -106,7 +106,6 @@ def parse_args():
                              "program/script to be launched in parallel, "
                              "followed by all the arguments for the "
                              "training script")
-    parser.add_argument("--ssh_port", type=int, default=22)
     # rest from the training program
     parser.add_argument('training_script_args', nargs=REMAINDER)
     return parser.parse_args()
@@ -154,7 +153,7 @@ if __name__ == "__main__":
         with open(arg_file, "w") as f:
             f.write(launch_cmd_format)
 
-    master_addr = reachable_machines[0]
+    master_addr = reachable_machines[0].split(":")[0]
     os.makedirs("ssh_logs", exist_ok=True)
     current_env = os.environ.copy()
     current_env[HEARTBEAT_IP_ENV_VAR] = str(args.manager_ip)
@@ -164,17 +163,18 @@ if __name__ == "__main__":
     
     for i,machine in enumerate(reachable_machines):
         launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr)
-        out_file = open(f"ssh_logs/ssh_out_{i}", "w")
-        err_file = open(f"ssh_logs/ssh_err_{i}", "w")
-        
-        if machine == "127.0.0.1":
+        out_file = open(f"ssh_logs/ssh_out_{i}.log", "w")
+        err_file = open(f"ssh_logs/ssh_err_{i}.log", "w")
+        machine_addr = machine.split(":")[0]
+        machine_port = machine.split(":")[1]
+        if machine_addr == "127.0.0.1":
             cmd = launch_cmd.split(" ")
             cmd = [x_ for x_ in cmd if x_ != ""]
             # print("launch cmd is ", cmd)
         else:
             cmd = ["ssh"]
-            cmd.append(f"-p {args.ssh_port}")
-            cmd.append(machine)
+            cmd.append(f"-p {machine_port}")
+            cmd.append(machine_addr)
             cmd.append(f"echo \"{launch_cmd}\" > launch_varuna.sh; ")
             cmd.append(f"{HEARTBEAT_IP_ENV_VAR}={args.manager_ip}") 
             cmd.append(f"{MORPH_PORT_ENV_VAR}={MORPH_PORT} {HEARTBEAT_PORT_ENV_VAR}={HEARTBEAT_PORT}")

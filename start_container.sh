@@ -1,0 +1,5 @@
+#!/bin/bash
+docker run --gpus device=0 -d  -v ~/code/python/:/workspace -v /mnt:/mnt --net=host --ipc=host --device=/dev/infiniband/rdma_cm --device=/dev/infiniband/uverbs0 --ulimit memlock=-1:-1  --name varu-0 varuna:v1  sleep infinity
+docker run --gpus device=1 -d  -v ~/code/python/:/workspace -v /mnt:/mnt --net=host --ipc=host --device=/dev/infiniband/rdma_cm --device=/dev/infiniband/uverbs0 --ulimit memlock=-1:-1  --name varu-1 varuna:v1  sleep infinity
+docker run --gpus device=2 -d  -v ~/code/python/:/workspace -v /mnt:/mnt --net=host --ipc=host --device=/dev/infiniband/rdma_cm --device=/dev/infiniband/uverbs0 --ulimit memlock=-1:-1  --name varu-2 varuna:v1  sleep infinity
+docker run --gpus device=3 -d  -v ~/code/python/:/workspace -v /mnt:/mnt --net=host --ipc=host --device=/dev/infiniband/rdma_cm --device=/dev/infiniband/uverbs0 --ulimit memlock=-1:-1  --name varu-3 varuna:v1  sleep infinity
