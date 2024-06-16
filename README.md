@@ -21,9 +21,13 @@ pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp
 To install, clone this repository, cd into it and run
 ~~~~
 python setup.py install
-需要拷贝genschedule文件
+cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
 ~~~~
 ## Running
+
+使用GLOO的时候如果发现总是连接127.0.0.1。就要修改`/etc/hosts`文件。
+
+还在`~/.bashrc`中添加了`GLOO_SOCKET_IFNAME`
 
 Varuna trains large DNN models by parallelising them into sequential pipeline stages and data parallel replicas across a set of GPUs. These methods are called pipeline parallelism and data parallelism respectively.
 To enable parallel training with Varuna, there are several steps the user must follow. Detailed docs are in the `docs/` folder as webpages (`html/index.html`) or pdf (`varuna.pdf`). 

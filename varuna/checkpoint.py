@@ -65,13 +65,14 @@ def write_varuna_checkpoint(varuna_model, global_store, step, tempdir=None, shar
     # optimizer extra state
     extra_state = optimizer.state_dict()
     extra_state["state"] = {}
-    torch.save(extra_state, os.path.join(cp_dir_name, opt_extra_state_name))
+    torch.save(extra_state, os.path.join(cp_dir_name, f"{opt_extra_state_name}-{rank}"))
            
     cp_time = time.time() - cp_time
     print("Opt ckpt time", cp_time)
 
     ckpt_future = None
     if tempdir is not None and len(mv_futures) > 0:
+        print(f"tempdir: {tempdir}")
         ckpt_future = executor.submit(future_on_futures, mv_futures, rank, local_rank, 
                         step, global_store, param_count)
         executor.shutdown(wait = False)
@@ -82,7 +83,8 @@ def write_varuna_checkpoint(varuna_model, global_store, step, tempdir=None, shar
         global_tracker = get_global_ckpt_tracker(global_store, rank, step)
         with open(global_tracker,"w") as f:
             f.write(str(param_count))
-
+        print(f"local_tracker: {local_tracker}, global_tracker: {global_tracker}")
+    print("in here")
     return ckpt_future
 
 
