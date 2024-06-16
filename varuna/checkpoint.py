@@ -65,7 +65,7 @@ def write_varuna_checkpoint(varuna_model, global_store, step, tempdir=None, shar
     # optimizer extra state
     extra_state = optimizer.state_dict()
     extra_state["state"] = {}
-    torch.save(extra_state, os.path.join(cp_dir_name, f"{opt_extra_state_name}-{rank}"))
+    torch.save(extra_state, os.path.join(cp_dir_name,   opt_extra_state_name))
            
     cp_time = time.time() - cp_time
     print("Opt ckpt time", cp_time)
