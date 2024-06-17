@@ -1,3 +1,65 @@
+# 使用
+
+需要关注的三个项目：
+
+```
+git clone git@github.com:ZhuJiaqi9905/varuna.git
+
+git clone git@github.com:NVIDIA/Megatron-LM.git -b varuna Megatron-LM-varuna
+
+git@github.com:ZhuJiaqi9905/apex.git -b varuna apex
+```
+但是我已经在gpu-46 gpu-90 gpu-91 gpu-92创建好16个容器了。你直接用他们就行。
+
+## varuna
+
+安装：
+
+```
+python setup.py install
+cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
+```
+
+`start_container.sh`里面是启动容器的脚本。
+
+启动容器后，需要对每个容器修改ssh port并启动ssh server。
+
+## apex
+
+安装
+```
+pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
+```
+
+## Megatron-LM-varuna
+
+在scripts下有pretrain, proflle, kill的脚本。
+
+在available_machines.out文件中指定node，会在训练时作为跑模型的node。
+
+训练的log在`ssh_logs`文件夹里。
+
+`/mnt/gpu-91`是共享存储。varuna中数据集和checkpoint都需要写在共享存储里面。
+
+varuna只能用gloo后端。
+
+# 一些注意的点
+
+- 如果改了varuna的代码之后，需要运行：
+```
+python setup.py install
+cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
+```
+
+- 如果gloo连接建不起来，查看一下`etc/hosts`文件：需要把主机名和ip地址配对。不能用127.0.0.1
+
+- 有一些配置下，模型训练不起来。
+
+- 理论上varuna可以根据profile的结果自动选择最优的切分方案。但是待探索出来怎么用。
+
+
+
+
 # _Varuna_
 
 _Varuna_ is a tool for efficient training of large DNN models on commodity GPUs and networking. It implements a combination of pipeline parallelism and data parallelism in PyTorch, and enables training on a changing set of resources smoothly.
