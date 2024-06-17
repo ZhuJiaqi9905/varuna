@@ -127,8 +127,8 @@ if __name__ == "__main__":
         print("Empty machine list, nothing to run!")
         exit()
 
-    if any([arg is None for arg in [args.batch_size, args.nstages, args.chunk_size, args.training_script]]):
-        assert args.resume, "Training script, batch size, num of partitions and micro-batch size required!"
+    # if any([arg is None for arg in [args.batch_size, args.nstages, args.chunk_size, args.training_script]]):
+    #     assert args.resume, "Training script, batch size, num of partitions and micro-batch size required!"
 
     if args.code_dir is None:
         args.code_dir = os.getcwd()
