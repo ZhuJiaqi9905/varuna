@@ -218,7 +218,7 @@ class PartitionedModel(Module):
 
         # self.logfile = open("wait_logs" + str(self.rank),"w")
 
-    def initialize(self, get_batch_fn, from_cache=False):
+    def initialize(self, get_batch_fn, from_cache=True):
         # print("Initializing partitioned model!")
         start = time.time()
         self.dry_run(get_batch_fn, from_cache)
