@@ -48,12 +48,19 @@ def kill_morph_listeners():
 
 def get_launch_cmd_format(args):
     launch_cmd = [sys.executable]
-    launch_cmd.append(f" -u -m varuna.launcher" \
-        +  f" --ngpus_per_server {args.gpus_per_node}  " \
-        +  " --node_rank {} --nservers {} --master_addr {}"
-        +  f" --nstages {args.nstages} --batch_size {args.batch_size}" \
-        +  f" --chunk_size {args.chunk_size} --code_dir {args.code_dir}")
-    launch_cmd.append(args.training_script)
+    if args.nstages is not None:
+        launch_cmd.append(f" -u -m varuna.launcher" \
+            +  f" --ngpus_per_server {args.gpus_per_node}  " \
+            +  " --node_rank {} --nservers {} --master_addr {}"
+            +  f" --nstages {args.nstages} --batch_size {args.batch_size}" \
+            +  f" --chunk_size {args.chunk_size} --code_dir {args.code_dir}")
+        launch_cmd.append(args.training_script)
+    else:
+        launch_cmd.append(f" -u -m varuna.launcher" \
+            +  f" --ngpus_per_server {args.gpus_per_node}  " \
+            +  " --node_rank {} --nservers {} --master_addr {}"
+            +  f" --code_dir {args.code_dir}")
+        launch_cmd.append(args.training_script)
     launch_cmd.extend(args.training_script_args)
     launch_cmd = " ".join(launch_cmd)
     return launch_cmd
