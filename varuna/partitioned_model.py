@@ -147,10 +147,13 @@ def dry_run(model, get_batch, from_cache):
 
     # TODO: move to proper temp location
     with open("_tmp_ord_mod",'wb') as f:
+        print("create _tmp_ord_mod")
         pickle.dump(list(ordered_modules.keys()),f)
     with open("_tmp_inp_shapes",'wb') as f:
+        print("create _tmp_inp_shapes")
         pickle.dump(input_shapes,f)
     with open("_tmp_shape_changes",'wb') as f:
+        print("create _tmp_shape_changes")
         pickle.dump(shape_indices_to_change,f)
 
     return ordered_modules, input_shapes, \
