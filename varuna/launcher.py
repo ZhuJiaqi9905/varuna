@@ -130,6 +130,8 @@ def parse_args():
                         help="Micro-batch size per mini-batch")
     parser.add_argument("--code_dir", default=None, type=str,
                         help="Directory to run training in")
+    parser.add_argument("--profile_dir", default=None, type=str,
+                        help="Directory to run profiling in")
     parser.add_argument("--gpus_per_stage", type=int, default = "0",
                         help="GPUs per stage (Only needed when we want to use less than ngpus_per_server * nservers)")
     # need a better way to pass this information ?

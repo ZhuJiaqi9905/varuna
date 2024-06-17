@@ -7,7 +7,7 @@ import pickle
 class AutoConfig:
 
     def __init__(self, num_gpus, gpus_per_vm, batch_size,
-                profile_folder, gpu_memory_capacity=None, verbose=True, 
+                profile_folder='/workspace/Megatron-LM-varuna/profiles', gpu_memory_capacity=None, verbose=True, 
                 autofill_missing_compute=False):
 
         self.num_gpus = num_gpus
@@ -17,18 +17,19 @@ class AutoConfig:
             gpu_memory_capacity = torch.cuda.get_device_properties(0).total_memory
         self.gpu_memory_capacity = gpu_memory_capacity
         
-        self.read_model_structure()
+        self.read_model_structure(verbose)
         self.read_profile(profile_folder, autofill_missing_compute)
 
         num_stages_candidates = [ i for i in range(1, self.num_pstages) if self.num_pstages % i == 0]
         self.batch_times = dict()
         self.micro_batch = dict()
+        self.verbose = verbose
 
         for pp_size in num_stages_candidates:
             if num_gpus < pp_size:
                 print(f"can't have {pp_size} stages!")
                 continue
-            if verbose:
+            if self.verbose:
                 print("Stages", pp_size)
             # get highest micro batch for each num_stage_cand
             mbs = self.get_microbatch_size(pp_size)
@@ -152,7 +153,7 @@ class AutoConfig:
         with open(os.path.join(profile_folfder, "allred-profile"), "rb") as f:
             self.all_reduce_profile = pickle.load(f)
 
-    def read_model_structure(self):
+    def read_model_structure(self, verbose):
         with open("_tmp_inp_shapes",'rb') as f:
             input_shapes = pickle.load(f)
         input_shapes_keys = list(input_shapes.keys())

@@ -11,6 +11,7 @@ git@github.com:ZhuJiaqi9905/apex.git -b varuna apex
 ```
 但是我已经在gpu-46 gpu-90 gpu-91 gpu-92创建好16个容器了。你直接用他们就行。
 
+gpu-91的varu-0是master。
 ## varuna
 
 安装：
@@ -51,7 +52,7 @@ python setup.py install
 cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
 ```
 
-- 如果gloo连接建不起来，查看一下`etc/hosts`文件：需要把主机名和ip地址配对。不能用127.0.0.1
+- 如果gloo连接建不起来，查看一下`/etc/hosts`文件：需要把主机名和ip地址配对。不能用127.0.0.1
 
 - 有一些配置下，模型训练不起来。
 
