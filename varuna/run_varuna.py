@@ -61,6 +61,7 @@ def get_launch_cmd_format(args):
             +  f" --total_gpus {args.total_gpus}  " \
             +  f" --gpus_per_server {args.gpus_per_node}  " \
             +  " --node_rank {} --nservers {} --master_addr {}"
+            +  f" --batch_size {args.batch_size}" \
             +  f" --code_dir {args.code_dir}")
         launch_cmd.append(args.training_script)
     launch_cmd.extend(args.training_script_args)
