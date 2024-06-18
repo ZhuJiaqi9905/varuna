@@ -117,7 +117,7 @@ class AutoConfig:
         if verbose:
             print(simulate)
         batch_time = simulate.split("\n")[0]
-        batch_time = int(batch_time.split(" ")[-1])
+        batch_time = int(float(batch_time.split(" ")[-1]))
         batch_time = batch_time / 1000000
         return batch_time
 
