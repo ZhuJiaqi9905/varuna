@@ -498,6 +498,7 @@ class Profiler:
     def gather_profile(self, out_folder):
         # gather comm profile
         obj_list = [None for _ in range(dist.get_world_size())] if self.rank == 0 else None
+        dist.gather_object(self.comm_profile, object_gather_list = obj_list, dst=0)
         if self.rank == 0:
             aggregate_comm_profile = dict()
             for comm_profile in obj_list:
