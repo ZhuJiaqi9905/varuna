@@ -499,6 +499,7 @@ class Profiler:
         # gather comm profile
         obj_list = [None for _ in range(dist.get_world_size())] if self.rank == 0 else None
         comm_profile_path = os.path.join(self.out_folder, f"comm-profile")
+        print(f'comm_profile_path: {comm_profile_path}, os.path.exists(comm_profile_path): {os.path.exists(comm_profile_path)}')
         if os.path.exists(comm_profile_path):
             with open(comm_profile_path, "rb") as f:
                 comm_profile = pickle.load(f)
