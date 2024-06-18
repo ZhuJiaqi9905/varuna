@@ -19,7 +19,7 @@ def calculate_config(args):
     # world size in terms of number of processes
     gpus_available = args.ngpus_per_server * args.nservers
     if args.nstages is None:
-        args.nstages, args.chunk_size = num_partitions(gpus_available, args.ngpus_per_server, args.batch_size)
+        args.nstages, args.chunk_size = num_partitions(gpus_available, args.ngpus_per_server, args.batch_size, args.total_gpus)
     gpus_per_stage = (gpus_available // args.nstages) if args.gpus_per_stage == 0 else args.gpus_per_stage
     # args.gpus_per_stage = gpus_per_stage
     print(gpus_per_stage, "per stage")
@@ -77,8 +77,8 @@ def calculate_config(args):
 
     return dist_world_size, stage_to_rank_map, ranks_in_server, total_batch_size, gpus_per_stage
     
-def num_partitions(world_size, ngpus_per_server, batch_size):
-    auto = AutoConfig(world_size, ngpus_per_server, batch_size)
+def num_partitions(world_size, ngpus_per_server, batch_size, total_gpus):
+    auto = AutoConfig(world_size, ngpus_per_server, batch_size, total_gpus)
     num_partitions, chunk_size, time = auto.get_min()
     print("best config is:", num_partitions, chunk_size)
     print("expected time is", time, flush=True)
@@ -116,8 +116,10 @@ def parse_args():
     parser = ArgumentParser(description="Varuna training launch "
                                         "helper utilty that will spawn up "
                                         "multiple distributed processes")
-    parser.add_argument("--ngpus_per_server", type=int, default=4,
+    parser.add_argument("--gpus_per_server", type=int, default=1,
                         help="The desired number of GPUs per server. Each process can be bound to a single GPU.")
+    parser.add_argument("--total_gpus", type=int, default=16,
+                        help="Total numbers of GPU.")
     parser.add_argument("--nservers", type=int, default=1,
                         help="The total number of nodes.")
     parser.add_argument("--node_rank", type=int, default=0,

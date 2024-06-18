@@ -6,11 +6,12 @@ import pickle
 
 class AutoConfig:
 
-    def __init__(self, num_gpus, gpus_per_vm, batch_size,
+    def __init__(self, num_gpus, gpus_per_vm, batch_size, total_gpus=16,
                 profile_folder='/mnt/gpu-91/varuna/profiles', gpu_memory_capacity=None, verbose=True, 
-                autofill_missing_compute=False):
+                autofill_missing_compute=True):
 
         self.num_gpus = num_gpus
+        self.total_gpus = total_gpus
         self.batch_size = batch_size
         self.gpus_per_vm = gpus_per_vm
         if gpu_memory_capacity is None:
@@ -131,11 +132,11 @@ class AutoConfig:
                 min_time = self.batch_times[pp_size]
         return best_pp, best_mbs, min_time
 
-    def read_profile(self, profile_folfder, autofill_missing_compute=False):
+    def read_profile(self, profile_folfder, autofill_missing_compute=True):
         
         self.compute_profile = []
         self.comm_profile = []
-        for i in range(self.num_pstages):
+        for i in range(min(self.num_pstages, self.total_gpus)):
             profile_path = os.path.join(profile_folfder, f"compute-profile-{i}")
             if os.path.exists(profile_path):
                 with open(profile_path, "rb") as f:
