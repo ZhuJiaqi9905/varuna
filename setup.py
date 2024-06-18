@@ -10,7 +10,7 @@ cmd = ["g++","-std=c++11", "simulate-varuna-main.cc", "generate_schedule.cc", "s
 subprocess.run(cmd, cwd=tools_dir, check=True)
 cmd = ["cp","-r", "/workspace/varuna/tools", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg"]
 subprocess.run(cmd, cwd=tools_dir, check=True)
-cmd = ["cp", "/workspace/varuna/genschedule", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/"]
+cmd = ["cp", "/workspace/varuna/varuna/genschedule", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/"]
 subprocess.run(cmd, cwd=tools_dir, check=True)
 setup(
     name="varuna",
