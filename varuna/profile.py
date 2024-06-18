@@ -450,6 +450,7 @@ class Profiler:
         #     grad_recv_time =  sum(grads_recv_times)/len(grads_recv_times)
 
         gpus_per_node = 4
+        print(f'act_send_time: {act_send_time}, grad_send_time: {grad_send_time}')
         if act_send_time > 0:
             long_send = (self.rank//gpus_per_node) != ((self.rank + 1)//gpus_per_node)
             self.comm_profile[mBS] = {"send": -1 if long_send else act_send_time,
