@@ -527,6 +527,7 @@ class Profiler:
                         aggregate_comm_profile[comm_shape][key] = -1
 
             with open(os.path.join(out_folder, "comm-profile"), "wb") as f:
+                print(f'{os.path.join(out_folder, "comm-profile")}: aggregate_comm_profile: {aggregate_comm_profile}')
                 pickle.dump(aggregate_comm_profile, f)
        
     def set_ret_val(self, val):
