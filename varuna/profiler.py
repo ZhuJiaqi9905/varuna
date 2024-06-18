@@ -498,6 +498,16 @@ class Profiler:
     def gather_profile(self, out_folder):
         # gather comm profile
         obj_list = [None for _ in range(dist.get_world_size())] if self.rank == 0 else None
+        comm_profile_path = os.path.join(self.out_folder, f"comm-profile")
+        if os.path.exists(comm_profile_path):
+            with open(comm_profile_path, "rb") as f:
+                comm_profile = pickle.load(f)
+            for key in comm_profile:
+                val = comm_profile[key]
+                # TODO: this should also have weight for the single val?
+                print(f'add send val {val["send"]}')
+                self.comm_profile[key] = {"send": [val["send"]], 
+                                "long_send": [val["long_send"]]}
         dist.gather_object(self.comm_profile, object_gather_list = obj_list, dst=0)
         if self.rank == 0:
             aggregate_comm_profile = dict()
