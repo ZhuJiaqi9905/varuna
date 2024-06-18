@@ -136,7 +136,7 @@ class AutoConfig:
         
         self.compute_profile = []
         self.comm_profile = []
-        for i in range(min(self.num_pstages, self.total_gpus)):
+        for i in range(self.total_gpus):
             profile_path = os.path.join(profile_folfder, f"compute-profile-{i}")
             if os.path.exists(profile_path):
                 with open(profile_path, "rb") as f:
