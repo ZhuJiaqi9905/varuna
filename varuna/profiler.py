@@ -515,6 +515,7 @@ class Profiler:
             for comm_shape in aggregate_comm_profile:
                 for key in ["send","long_send"]:
                     comm_times = aggregate_comm_profile[comm_shape][key]
+                    print(comm_times)
                     if len(comm_times) > 0:
                         avg_time = sum(comm_times)/len(comm_times)
                         aggregate_comm_profile[comm_shape][key] = avg_time * 1000000
