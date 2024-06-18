@@ -8,6 +8,10 @@ subprocess.run(cmd, cwd=varuna_dir, check=True)
 tools_dir = os.path.join(this_dir, "tools", "simulator")
 cmd = ["g++","-std=c++11", "simulate-varuna-main.cc", "generate_schedule.cc", "simulate-varuna.cc", "-o", "simulate-varuna"]
 subprocess.run(cmd, cwd=tools_dir, check=True)
+cmd = ["cp","-r", "tools/", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg"]
+subprocess.run(cmd, cwd=tools_dir, check=True)
+cmd = ["cp", "varuna/genschedule", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/"]
+subprocess.run(cmd, cwd=tools_dir, check=True)
 setup(
     name="varuna",
     version="0.0.1",
