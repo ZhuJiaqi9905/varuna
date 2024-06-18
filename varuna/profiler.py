@@ -166,6 +166,7 @@ class Profiler:
                     for key in comm_profile:
                         val = comm_profile[key]
                         # TODO: this should also have weight for the single val?
+                        print(f'add send val {val['send']}')
                         self.comm_profile[key] = {"send": [val["send"]], 
                                         "long_send": [val["long_send"]]}
                 if os.path.exists(alr_profile_path):
@@ -509,6 +510,7 @@ class Profiler:
                     this_profile = comm_profile[comm_shape]
                     full_profile["send"].extend(this_profile["send"])
                     full_profile["long_send"].extend(this_profile["long_send"])
+            print(f'full_profile["send"] {full_profile["send"]}')
 
             for comm_shape in aggregate_comm_profile:
                 for key in ["send","long_send"]:
