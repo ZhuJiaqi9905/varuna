@@ -7,7 +7,7 @@ import pickle
 class AutoConfig:
 
     def __init__(self, num_gpus, gpus_per_vm, batch_size,
-                profile_folder='/workspace/Megatron-LM-varuna/profiles', gpu_memory_capacity=None, verbose=True, 
+                profile_folder='/mnt/gpu-91/varuna/profiles', gpu_memory_capacity=None, verbose=True, 
                 autofill_missing_compute=False):
 
         self.num_gpus = num_gpus
