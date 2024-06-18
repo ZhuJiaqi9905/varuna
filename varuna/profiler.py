@@ -508,8 +508,8 @@ class Profiler:
                     
                     full_profile = aggregate_comm_profile[comm_shape]
                     this_profile = comm_profile[comm_shape]
-                    full_profile["send"].extend(this_profile["send"])
-                    full_profile["long_send"].extend(this_profile["long_send"])
+                    full_profile["send"].extend([this_profile["send"]])
+                    full_profile["long_send"].extend([this_profile["long_send"]])
             print(f'full_profile["send"] {full_profile["send"]}')
 
             for comm_shape in aggregate_comm_profile:
