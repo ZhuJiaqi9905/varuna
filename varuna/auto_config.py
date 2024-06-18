@@ -105,7 +105,7 @@ class AutoConfig:
         out.close()
 
     def get_simulated_time(self, pp_size, num_microbatches, send_time, \
-                    long_send_time, alr, verbose=False):
+                    long_send_time, alr, verbose=True):
         tools_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'tools')
         sim_binary = os.path.join(tools_dir, "simulator", "simulate-varuna")
         # TODO: use C++ extension for python?
