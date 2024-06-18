@@ -683,12 +683,12 @@ class Profiler:
         print(f'act_send_time: {act_send_time}, grad_send_time: {grad_send_time}')
         if act_send_time > 0:
             long_send = (self.rank//gpus_per_node) != ((self.rank + 1)//gpus_per_node)
-            self.comm_profile[mBS] = {"send": -1 if long_send else act_send_time,
-                                   "long_send": act_send_time if long_send else -1}
+            self.comm_profile[mBS] = {"send": 0 if long_send else act_send_time,
+                                   "long_send": act_send_time if long_send else 0}
         if grad_send_time > 0:
             long_send = (self.rank//gpus_per_node) != ((self.rank - 1)//gpus_per_node)
-            self.comm_profile[mBS] = {"send": -1 if long_send else grad_send_time,
-                                   "long_send": grad_send_time if long_send else -1}
+            self.comm_profile[mBS] = {"send": 0 if long_send else grad_send_time,
+                                   "long_send": grad_send_time if long_send else 0}
 
         # gpus_per_node = self.gpus_per_node
         # print(f'act_send_time: {self.acts_send_times}, grad_send_time: {self.grads_send_times}')
