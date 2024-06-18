@@ -112,11 +112,13 @@ class AutoConfig:
         command = f"GPUS_PER_VM={self.gpus_per_vm} {sim_binary} " + \
                     f"{pp_size} {num_microbatches} {send_time} {alr} {long_send_time}"
         if verbose:
-            print(command)
+            print(f'command:{command}')
         simulate = os.popen( command).read()
         if verbose:
-            print(simulate)
+            print(f'simulate:{simulate}')
         batch_time = simulate.split("\n")[0]
+        if verbose:
+            print(f'batch_time:{batch_time}, batch_time.split(" "): {batch_time.split(" ")}')
         batch_time = int(float(batch_time.split(" ")[-1]))
         batch_time = batch_time / 1000000
         return batch_time
