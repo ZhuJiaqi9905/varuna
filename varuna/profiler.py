@@ -662,21 +662,49 @@ class Profiler:
         if self.grads_send_thread is not None:
             self.grads_send_thread.join()
 
+        act_send_time = act_recv_time = 0
+        grad_send_time = grad_recv_time = 0
 
-        gpus_per_node = self.gpus_per_node
+        acts_recv_times = self.acts_recv_times[5:]
+        acts_send_times = self.acts_send_times[5:]
+        grads_recv_times = self.grads_recv_times[5:]
+        grads_send_times = self.grads_send_times[5:]
+
         if len(self.acts_send_times) > 0:
-            comm_size = self.next_rank_comm_shape
-            long_send = (self.rank//gpus_per_node) != ((self.rank + 1)//gpus_per_node)
-            send_times = self.comm_profile[comm_size]["long_send"] if long_send else \
-                        self.comm_profile[comm_size]["send"]
-            send_times.extend(self.acts_send_times)
-
+            act_send_time =  sum(acts_send_times)/len(acts_send_times)
+        # if len(acts_recv_times) > 0:
+        #     act_recv_time =  sum(acts_recv_times)/len(acts_recv_times)
         if len(self.grads_send_times) > 0:
-            comm_size = self.prev_rank_comm_shape
+            grad_send_time =  sum(grads_send_times)/len(grads_send_times)
+        # if len(grads_recv_times) > 0:
+        #     grad_recv_time =  sum(grads_recv_times)/len(grads_recv_times)
+
+        gpus_per_node = 4
+        print(f'act_send_time: {act_send_time}, grad_send_time: {grad_send_time}')
+        if act_send_time > 0:
+            long_send = (self.rank//gpus_per_node) != ((self.rank + 1)//gpus_per_node)
+            self.comm_profile[mBS] = {"send": -1 if long_send else act_send_time,
+                                   "long_send": act_send_time if long_send else -1}
+        if grad_send_time > 0:
             long_send = (self.rank//gpus_per_node) != ((self.rank - 1)//gpus_per_node)
-            send_times = self.comm_profile[comm_size]["long_send"] if long_send else \
-                        self.comm_profile[comm_size]["send"]
-            send_times.extend(self.grads_send_times)
+            self.comm_profile[mBS] = {"send": -1 if long_send else grad_send_time,
+                                   "long_send": grad_send_time if long_send else -1}
+
+        # gpus_per_node = self.gpus_per_node
+        # print(f'act_send_time: {self.acts_send_times}, grad_send_time: {self.grads_send_times}')
+        # if len(self.acts_send_times) > 0:
+        #     comm_size = self.next_rank_comm_shape
+        #     long_send = (self.rank//gpus_per_node) != ((self.rank + 1)//gpus_per_node)
+        #     send_times = self.comm_profile[comm_size]["long_send"] if long_send else \
+        #                 self.comm_profile[comm_size]["send"]
+        #     send_times.extend(self.acts_send_times)
+
+        # if len(self.grads_send_times) > 0:
+        #     comm_size = self.prev_rank_comm_shape
+        #     long_send = (self.rank//gpus_per_node) != ((self.rank - 1)//gpus_per_node)
+        #     send_times = self.comm_profile[comm_size]["long_send"] if long_send else \
+        #                 self.comm_profile[comm_size]["send"]
+        #     send_times.extend(self.grads_send_times)
 
     def profile_all_reduce(self, factors, alr_sizes):
         num_passes = 3
