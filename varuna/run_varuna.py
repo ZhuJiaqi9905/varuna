@@ -50,14 +50,16 @@ def get_launch_cmd_format(args):
     launch_cmd = [sys.executable]
     if args.nstages is not None:
         launch_cmd.append(f" -u -m varuna.launcher" \
-            +  f" --ngpus_per_server {args.gpus_per_node}  " \
+            +  f" --gpus_per_server {args.gpus_per_node}  " \
+            +  f" --total_gpus {args.total_gpus}  " \
             +  " --node_rank {} --nservers {} --master_addr {}"
             +  f" --nstages {args.nstages} --batch_size {args.batch_size}" \
             +  f" --chunk_size {args.chunk_size} --code_dir {args.code_dir}")
         launch_cmd.append(args.training_script)
     else:
         launch_cmd.append(f" -u -m varuna.launcher" \
-            +  f" --ngpus_per_server {args.gpus_per_node}  " \
+            +  f" --total_gpus {args.total_gpus}  " \
+            +  f" --gpus_per_server {args.gpus_per_node}  " \
             +  " --node_rank {} --nservers {} --master_addr {}"
             +  f" --code_dir {args.code_dir}")
         launch_cmd.append(args.training_script)
@@ -87,6 +89,8 @@ def parse_args():
                             "These should be available to ssh into through the manager ")
     parser.add_argument("--gpus_per_node", type=int, default=4,
                             help = "number of GPUs per machine")
+    parser.add_argument("--total_gpus", type=int, default=16,
+                        help="Total numbers of GPU.")
     parser.add_argument("--manager_ip", type=str, default=None,
                             help= "IP address for long-living manager, used for varuna morphing."
                                   "If not given, it defaults to the IP of the machine from which varuna is triggered.")
