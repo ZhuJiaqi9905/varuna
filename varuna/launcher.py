@@ -17,9 +17,9 @@ processes = []
 
 def calculate_config(args):
     # world size in terms of number of processes
-    gpus_available = args.ngpus_per_server * args.nservers
+    gpus_available = args.gpus_per_server * args.nservers
     if args.nstages is None:
-        args.nstages, args.chunk_size = num_partitions(gpus_available, args.ngpus_per_server, args.batch_size, args.total_gpus)
+        args.nstages, args.chunk_size = num_partitions(gpus_available, args.gpus_per_server, args.batch_size, args.total_gpus)
     gpus_per_stage = (gpus_available // args.nstages) if args.gpus_per_stage == 0 else args.gpus_per_stage
     # args.gpus_per_stage = gpus_per_stage
     print(gpus_per_stage, "per stage")
@@ -27,13 +27,13 @@ def calculate_config(args):
     assert dist_world_size <= gpus_available, "Too many gpus_per_stage - {}!".format(gpus_per_stage)
 
     # some servers unused
-    args.nservers = math.ceil(dist_world_size / float(args.ngpus_per_server))
+    args.nservers = math.ceil(dist_world_size / float(args.gpus_per_server))
 
     print(args.nservers, "servers!")
     if args.node_rank >= args.nservers:
         print(args.node_rank, args.nservers, "I am of no use!")
         exit()
-    gpus_available = args.nservers * args.ngpus_per_server
+    gpus_available = args.nservers * args.gpus_per_server
 
     stage_to_rank_map = {}
     rank_to_stage_map = {}
@@ -54,13 +54,13 @@ def calculate_config(args):
     total_batch_size = per_gpu_batch_size * gpus_per_stage     
 
     last_unused_gpus = 0
-    if (dist_world_size % args.ngpus_per_server) != 0:
-        last_unused_gpus = args.ngpus_per_server - (dist_world_size % args.ngpus_per_server)
+    if (dist_world_size % args.gpus_per_server) != 0:
+        last_unused_gpus = args.gpus_per_server - (dist_world_size % args.gpus_per_server)
     
-    first_rank_in_server = args.node_rank * args.ngpus_per_server
-    ranks_in_server = range(first_rank_in_server, first_rank_in_server + args.ngpus_per_server)
+    first_rank_in_server = args.node_rank * args.gpus_per_server
+    ranks_in_server = range(first_rank_in_server, first_rank_in_server + args.gpus_per_server)
     if args.node_rank == args.nservers - 1:
-        ranks_in_server = range(first_rank_in_server, first_rank_in_server + args.ngpus_per_server - last_unused_gpus)
+        ranks_in_server = range(first_rank_in_server, first_rank_in_server + args.gpus_per_server - last_unused_gpus)
 
     stage_to_rank_map_str = ""
     for stage in stage_to_rank_map:
@@ -77,8 +77,8 @@ def calculate_config(args):
 
     return dist_world_size, stage_to_rank_map, ranks_in_server, total_batch_size, gpus_per_stage
     
-def num_partitions(world_size, ngpus_per_server, batch_size, total_gpus):
-    auto = AutoConfig(world_size, ngpus_per_server, batch_size, total_gpus)
+def num_partitions(world_size, gpus_per_server, batch_size, total_gpus):
+    auto = AutoConfig(world_size, gpus_per_server, batch_size, total_gpus)
     num_partitions, chunk_size, time = auto.get_min()
     print("best config is:", num_partitions, chunk_size)
     print("expected time is", time, flush=True)
@@ -135,7 +135,7 @@ def parse_args():
     parser.add_argument("--profile_dir", default=None, type=str,
                         help="Directory to run profiling in")
     parser.add_argument("--gpus_per_stage", type=int, default = "0",
-                        help="GPUs per stage (Only needed when we want to use less than ngpus_per_server * nservers)")
+                        help="GPUs per stage (Only needed when we want to use less than gpus_per_server * nservers)")
     # need a better way to pass this information ?
     # parser.add_argument("--total_num_stages", required=True, type=int,
     #                     help="The total number of potential stages/partitions the model is divided into")
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     current_env["MASTER_ADDR"] = args.master_addr
     current_env["MASTER_PORT"] = str(args.master_port)
 
-    if 'OMP_NUM_THREADS' not in os.environ and args.ngpus_per_server > 1:
+    if 'OMP_NUM_THREADS' not in os.environ and args.gpus_per_server > 1:
         current_env["OMP_NUM_THREADS"] = str(1)
         print("*****************************************\n"
             "Setting OMP_NUM_THREADS environment variable for each process "
@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
     for rank in ranks_in_server:
         
-        local_rank = rank % args.ngpus_per_server
+        local_rank = rank % args.gpus_per_server
         rank = alias_ranks[rank]            
 
         # each process's rank

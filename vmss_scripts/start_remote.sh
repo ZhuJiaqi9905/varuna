@@ -25,7 +25,7 @@ while [ $i != $nservers ]
 do
     map="$i  ${machines[i]}"
     echo $map
-    mid="run_varuna.py --node_rank $i --nservers $nservers --ngpus_per_server $ngpus --nstages $nstages --gpus_per_stage $gpus_per_stage"
+    mid="run_varuna.py --node_rank $i --nservers $nservers --gpus_per_server $ngpus --nstages $nstages --gpus_per_stage $gpus_per_stage"
     sudo ssh -o StrictHostKeyChecking=no -i /home/varuna/.ssh/vdummy.pem "varuna@${machines[i]}" "echo sshed; cd /home/varuna/DeepLearningExamples/PyTorch/LanguageModeling/BERT; sudo python3 $mid $5" > testouts/my_ssh_out_$i  2>testouts/my_ssh_err_$i &
     i=$(($i+1))
 done
