@@ -508,14 +508,16 @@ class Profiler:
                     
                     full_profile = aggregate_comm_profile[comm_shape]
                     this_profile = comm_profile[comm_shape]
-                    full_profile["send"].extend([this_profile["send"]])
-                    full_profile["long_send"].extend([this_profile["long_send"]])
+                    if this_profile["send"]:
+                        full_profile["send"].extend([this_profile["send"]])
+                    if this_profile["long_send"]:
+                        full_profile["long_send"].extend([this_profile["long_send"]])
             print(f'full_profile["send"] {full_profile["send"]}')
 
             for comm_shape in aggregate_comm_profile:
                 for key in ["send","long_send"]:
                     comm_times = aggregate_comm_profile[comm_shape][key]
-                    print(comm_times)
+                    print(f'comm_times:{comm_times}, comm_shape: {comm_shape}, key: {key}')
                     if len(comm_times) > 0:
                         avg_time = sum(comm_times)/len(comm_times)
                         aggregate_comm_profile[comm_shape][key] = avg_time * 1000000
