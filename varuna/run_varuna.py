@@ -173,6 +173,7 @@ if __name__ == "__main__":
     current_env[MORPH_PORT_ENV_VAR] = str(MORPH_PORT)
    # current_env["PATH"] = "PATH=\"/home/varuna/anaconda3/bin:$PATH\""
     
+    processes = []
     for i,machine in enumerate(reachable_machines):
         launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr)
         out_file = open(f"ssh_logs/ssh_out_{i}.log", "w")
@@ -194,6 +195,16 @@ if __name__ == "__main__":
             cmd.append("bash launch_varuna.sh")
             print(" ".join(cmd ))
        
-        process = subprocess.Popen(cmd, env=current_env, 
+        processes.append(subprocess.Popen(cmd, env=current_env, 
                                     stdout=out_file,
-                                    stderr=err_file)
+                                    stderr=err_file))
+    # wait for all processes
+    try:
+        for process in processes:
+            process.wait()
+            print("Process done with return code", process.returncode)
+            if process.returncode != 0:
+                for p in processes:
+                    p.kill()
+    except Exception as e:
+        print("run_varuna subprocesses quit with error:", e)
