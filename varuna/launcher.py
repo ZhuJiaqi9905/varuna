@@ -212,8 +212,8 @@ if __name__ == "__main__":
 
     alias_ranks = list(range(dist_world_size))
 
-    if args.node_rank == 0:
-        send_to_manager("starting job of size {}".format(dist_world_size), manager_ip, manager_port)
+    # if args.node_rank == 0:
+    #     send_to_manager("starting job of size {}".format(dist_world_size), manager_ip, manager_port)
 
     current_env["WORLD_SIZE"] = str(dist_world_size)
     print("World size is",dist_world_size)
