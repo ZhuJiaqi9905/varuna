@@ -30,7 +30,7 @@ import time
 
 Module = nn.Module
 
-log_verbose = False
+log_verbose = True
 
 TASK = ["fwd", "rec", "bwd"]
     
@@ -269,13 +269,14 @@ class Varuna(Module):
         
         # Divide a mini-batch into micro-batches.
         batches = utils.scatter(inputs, int(self.batch_size),self.micro_batch_size)
-        
+        print(f"batches len: {len(batches)}")
         self.config["make_logfile"] = bool(self.config["make_logfile"] and self.current_step < 5)
         batch_time = time.time()
 
         self.pipeline = Pipeline(batches, self.model, self.config, self.schedule, self.optimizer, verbose=log_verbose)
+        print("before pipe run")
         self.average_loss, fwd_time = self.pipeline.run()
-
+        print("after pipeline run")
         if log_verbose:
             print(f'{self.stage} {self.rank_within_stage} going to share embedding grads')
         
