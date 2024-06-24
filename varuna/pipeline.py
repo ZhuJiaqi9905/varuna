@@ -131,7 +131,7 @@ class Pipeline:
                     for d in self.fwd_inp_shape_changes:
                         fwd_inp_shape[d] = self.last_chunk_size
                 acts_tensor = torch.ones(fwd_inp_shape, dtype=dtype)
-                print(f"recv_rank: {self.receive_rank}. acts_tensor size: {acts_tensor.size(). qsize: {recv_handles.qsize()}}")
+                print(f"recv_rank: {self.receive_rank}. acts_tensor size: {acts_tensor.size()}. qsize: {recv_handles.qsize()}")
                 handle = dist.irecv(acts_tensor, src=self.receive_rank)
                 recv_handles.put((handle, acts_tensor))
                 if recv_handles.qsize()>4:
