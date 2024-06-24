@@ -29,7 +29,7 @@ def calculate_config(args):
     # some servers unused
     args.nservers = math.ceil(dist_world_size / float(args.gpus_per_server))
 
-    print(args.nservers, "servers!")
+    print(args.nservers, "SERVERS!", {args.node_rank})
     print(f'launcher: args.node_rank {args.node_rank}')
     if args.node_rank >= args.nservers:
         print(args.node_rank, args.nservers, "I am of no use!")
