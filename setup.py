@@ -19,5 +19,5 @@ setup(
 )
 cmd = ["cp","-r", "/workspace/varuna/tools", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg"]
 subprocess.run(cmd, cwd=tools_dir, check=True)
-cmd = ["cp", "/workspace/varuna/varuna/genschedule", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/"]
+cmd = ["cp", "-r", "/workspace/varuna/varuna/", "/opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/"]
 subprocess.run(cmd, cwd=tools_dir, check=True)
