@@ -125,8 +125,8 @@ class Varuna(Module):
         self.shared_weights = shared_weights
 
         # partition model based on "CutPoint"s using a dry run with dummy inputs (dict)
-        for name,param in model.named_parameters():
-            print(f"name: {name}. size: {param.size()}")
+        # for name,param in model.named_parameters():
+        #     print(f"name: {name}. size: {param.size()}")
         self.model = PartitionedModel(model, self.rank, self.local_rank, device, self.stage_to_rank_map, self.fp16, shared_weights)
         self.model.initialize( get_batch_fn, from_cache=from_cache )
         self.partitioned_model = self.model
