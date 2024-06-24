@@ -141,7 +141,7 @@ def parse_args():
     # parser.add_argument("--total_num_stages", required=True, type=int,
     #                     help="The total number of potential stages/partitions the model is divided into")
     
-    parser.add_argument("--master_addr", default="127.0.0.1", type=str,
+    parser.add_argument("--master_addr", default="172.21.0.91", type=str,
                         help="Master node (rank 0)'s address, should be either "
                              "the IP address or the hostname of node 0, for "
                              "single node multi-proc training, the "
