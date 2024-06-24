@@ -125,6 +125,8 @@ class Varuna(Module):
         self.shared_weights = shared_weights
 
         # partition model based on "CutPoint"s using a dry run with dummy inputs (dict)
+        for name,param in model.named_parameters():
+            print(f"name: {name}. size: {param.size()}")
         self.model = PartitionedModel(model, self.rank, self.local_rank, device, self.stage_to_rank_map, self.fp16, shared_weights)
         self.model.initialize( get_batch_fn, from_cache=from_cache )
         self.partitioned_model = self.model
@@ -189,11 +191,13 @@ class Varuna(Module):
             self.fwd_inp_shape_changes = self.model.fwd_inp_shape_changes[0]
             for i in self.fwd_inp_shape_changes:
                 self.fwd_inp_shape[i] =  self.micro_batch_size
+            print(self.fwd_inp_shape, self.fwd_inp_shape_changes, self.micro_batch_size)
         if self.stage < (self.partitions-1):
             self.bwd_grad_shape = self.model.backward_grad_shapes[0]
             self.bwd_grad_shape_changes = self.model.bwd_grad_shape_changes[0]
             for i in self.bwd_grad_shape_changes:
                 self.bwd_grad_shape[i] = self.micro_batch_size
+            print(self.bwd_grad_shape, self.bwd_grad_shape_changes, self.micro_batch_size)
 
     def init_distributed(self):
         # create same process groups on all ranks
