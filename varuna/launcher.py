@@ -235,6 +235,7 @@ if __name__ == "__main__":
         # each process's rank
         current_env["RANK"] = str(rank)
         current_env["LOCAL_RANK"] = str(local_rank)
+        current_env["GLOO_SOCKET_IFNAME"] = 'enp216s0np0'
 
         # spawn the processes
         cmd = [sys.executable, "-u"]
@@ -251,7 +252,7 @@ if __name__ == "__main__":
         cmd.extend(args.training_script_args)
         print(" ".join(cmd), flush=True)
 
-        process = subprocess.Popen(cmd, env=current_env,cwd=args.code_dir)
+        process = subprocess.Popen(cmd, env=current_env, cwd=args.code_dir)
         processes.append(process)
 
     # wait for all processes
