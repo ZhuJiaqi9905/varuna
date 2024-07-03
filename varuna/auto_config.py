@@ -199,7 +199,7 @@ class AutoConfig:
                 max_memory_used = max(mem_usage,max_memory_used)
             return max_memory_used
 
-        max_micro_bs = max([len(profile) - 1 for profile in self.compute_profile])
+        max_micro_bs = min([len(profile) - 1 for profile in self.compute_profile])
         start = 1; end = max_micro_bs
         limit = self.gpu_memory_capacity
 
