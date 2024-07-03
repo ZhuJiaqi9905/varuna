@@ -244,7 +244,7 @@ class PartitionedModel(Module):
         else:
             dist.barrier()
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = read_dry_run_out(self.module. self.rank)
+                self.num_cutpoints = read_dry_run_out(self.module, self.rank)
             
         if self.local_rank == 0 and not (from_cache and os.path.exists(f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
             dummy_inputs = get_batch(1, "cpu")
