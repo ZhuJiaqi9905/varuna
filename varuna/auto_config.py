@@ -16,7 +16,7 @@ class AutoConfig:
         self.gpus_per_vm = gpus_per_vm
         if gpu_memory_capacity is None:
             gpu_memory_capacity = torch.cuda.get_device_properties(0).total_memory
-        self.gpu_memory_capacity = gpu_memory_capacity
+        self.gpu_memory_capacity = int(gpu_memory_capacity * 0.8)
         
         self.read_model_structure(verbose)
         self.read_profile(profile_folder, autofill_missing_compute)
@@ -206,6 +206,7 @@ class AutoConfig:
         while start < end:
             mid = int(math.ceil((start+end) / 2))
             mem_usage = get_max_mem(mid)
+            print(f'mid: {mid} mem_usage: {mem_usage}, limit: {limit}')
             if mem_usage > limit:
                 end = mid-1
             elif mem_usage < limit:
