@@ -412,14 +412,14 @@ class Profiler:
         # executes the forward pass of the module on dummy inputs. 
         # Sets the order in which modules are used and the total number of cutpoints declared.
 
-        dummy_inputs = get_batch(1, device='cpu')
+        dummy_inputs = get_batch(1, device=self.device)
         self.dummy_inputs = dummy_inputs
         
         if self.local_rank == 0 and not (from_cache and \
             all([os.path.exists(f) for f in ["/tmp/_tmp_ord_mod","/tmp/_tmp_inp_shapes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = dry_run(self.model, get_batch, from_cache)
+                self.num_cutpoints = dry_run(self.model, self.device, get_batch, from_cache)
             dist.barrier()
         else:
             dist.barrier()

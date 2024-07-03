@@ -89,7 +89,7 @@ class CutPoint(Module):
         self.cp_func = c
 
 
-def dry_run(model, get_batch, from_cache):
+def dry_run(model, device, get_batch, from_cache):
     # executes the forward pass of the module on dummy inputs. 
     # Sets the order in which modules are used and the total number of cutpoints declared.
 
@@ -123,6 +123,7 @@ def dry_run(model, get_batch, from_cache):
     model(**dummy_inputs)
     input_shapes_1 = input_shapes
     input_shapes = dict()
+    del dummy_inputs
     dummy_inputs_2 = get_batch(2, device='cpu')
     print(f'prepare dummy inputs')
     model(**dummy_inputs_2)
@@ -238,7 +239,7 @@ class PartitionedModel(Module):
             all([os.path.exists(f) for f in ["/tmp/_tmp_ord_mod","/tmp/_tmp_inp_shapes","/tmp/_tmp_shape_changes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = dry_run(self.module, get_batch, from_cache)
+                self.num_cutpoints = dry_run(self.module, self.device, get_batch, from_cache)
             dist.barrier()
         else:
             dist.barrier()
