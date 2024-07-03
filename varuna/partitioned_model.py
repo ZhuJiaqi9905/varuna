@@ -124,9 +124,11 @@ def dry_run(model, get_batch, from_cache):
     input_shapes_1 = input_shapes
     input_shapes = dict()
     dummy_inputs_2 = get_batch(2, 'cpu')
+    print(f'prepare dummy inputs')
     model(**dummy_inputs_2)
     input_shapes_2 = input_shapes
     input_shapes = input_shapes_1
+    print(f'prepare shape_indices_to_change')
 
     shape_indices_to_change = dict()
     for name in input_shapes:
