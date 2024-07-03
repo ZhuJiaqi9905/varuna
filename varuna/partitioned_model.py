@@ -93,7 +93,7 @@ def dry_run(model, get_batch, from_cache):
     # executes the forward pass of the module on dummy inputs. 
     # Sets the order in which modules are used and the total number of cutpoints declared.
 
-    dummy_inputs = get_batch(1, device='cpu')
+    dummy_inputs = get_batch(1, device='cuda')
     ordered_modules = OrderedDict()
     input_shapes = {}
     num_cutpoints = 0
@@ -123,7 +123,7 @@ def dry_run(model, get_batch, from_cache):
     model(**dummy_inputs)
     input_shapes_1 = input_shapes
     input_shapes = dict()
-    dummy_inputs_2 = get_batch(2, 'cpu')
+    dummy_inputs_2 = get_batch(2, device='cuda')
     print(f'prepare dummy inputs')
     model(**dummy_inputs_2)
     input_shapes_2 = input_shapes
