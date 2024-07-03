@@ -412,7 +412,7 @@ class Profiler:
         # executes the forward pass of the module on dummy inputs. 
         # Sets the order in which modules are used and the total number of cutpoints declared.
 
-        dummy_inputs = get_batch(1, device=self.device)
+        dummy_inputs = get_batch(1, device='cpu')
         self.dummy_inputs = dummy_inputs
         
         if self.local_rank == 0 and not (from_cache and \
