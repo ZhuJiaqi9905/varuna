@@ -179,9 +179,9 @@ if __name__ == "__main__":
     manager_ip = os.environ[HEARTBEAT_IP_ENV_VAR]
     manager_port = int(os.environ[MORPH_PORT_ENV_VAR])
         
-    if not os.path.exists(f'/tmp/profile_rank_{args.node_rank}'):
-        os.mkdir(f'/tmp/profile_rank_{args.node_rank}')
-        os.chmod(f'/tmp/profile_rank_{args.node_rank}', 0o777)
+    if not os.path.exists(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}'):
+        os.mkdir(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}')
+        os.chmod(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}', 0o777)
 
     def handler(signum,_):
         global loop_pending
