@@ -149,7 +149,7 @@ class Profiler:
         self.input_shapes = {}
         self.num_cutpoints = 0
 
-        if self.local_rank == 0 and (not (from_cache and os.path.exists(f"/tmp/{self.rank}/_tmp_ord_mod") and os.path.exists(f"/tmp/{self.rank}/_tmp_inp_shapes"))):
+        if self.local_rank == 0 and (not (from_cache and os.path.exists(f"/tmp/profile_rank_{self.rank}/_tmp_ord_mod") and os.path.exists(f"/tmp/profile_rank_{self.rank}/_tmp_inp_shapes"))):
 
             def get_hook(name):
                 def add_module_hook(module, inputs, _output):
@@ -174,16 +174,16 @@ class Profiler:
             for h in hooks:
                 h.remove()
 
-            with open(f"/tmp/{self.rank}/_tmp_ord_mod",'wb') as f:
+            with open(f"/tmp/profile_rank_{self.rank}/_tmp_ord_mod",'wb') as f:
                 pickle.dump(list(self.ordered_modules.keys()),f)
-            with open(f"/tmp/{self.rank}/_tmp_inp_shapes",'wb') as f:
+            with open(f"/tmp/profile_rank_{self.rank}/_tmp_inp_shapes",'wb') as f:
                 pickle.dump(self.input_shapes,f)
             dist.barrier()
 
         else:
             dist.barrier()
 
-            with open(f"/tmp/{self.rank}/_tmp_ord_mod",'rb') as f:
+            with open(f"/tmp/profile_rank_{self.rank}/_tmp_ord_mod",'rb') as f:
                 ordered_modules = pickle.load(f)
 
             for n in ordered_modules:
@@ -193,7 +193,7 @@ class Profiler:
                     modules = modules[path[i]]._modules
                 self.ordered_modules[n] = modules[path[-1]]
 
-            with open(f"/tmp/{self.rank}/_tmp_inp_shapes",'rb') as f:
+            with open(f"/tmp/profile_rank_{self.rank}/_tmp_inp_shapes",'rb') as f:
                 self.input_shapes = pickle.load(f)
             self.num_cutpoints = len(self.input_shapes)
     

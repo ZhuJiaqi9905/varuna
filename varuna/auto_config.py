@@ -157,11 +157,11 @@ class AutoConfig:
             self.all_reduce_profile = pickle.load(f)
 
     def read_model_structure(self, verbose):
-        with open(f"/tmp/{self.rank}/_tmp_inp_shapes",'rb') as f:
+        with open(f"/tmp/profile_rank_{self.rank}/_tmp_inp_shapes",'rb') as f:
             input_shapes = pickle.load(f)
         input_shapes_keys = list(input_shapes.keys())
         self.input_shapes = [input_shapes[k][0] for k in input_shapes_keys]
-        with open(f"/tmp/{self.rank}/_tmp_shape_changes",'rb') as f:
+        with open(f"/tmp/profile_rank_{self.rank}/_tmp_shape_changes",'rb') as f:
             shape_indices_to_change = pickle.load(f)
         self.shape_indices_to_change = [shape_indices_to_change[k][0] for k in input_shapes_keys]
         self.num_pstages = len(self.input_shapes) + 1
@@ -199,7 +199,7 @@ class AutoConfig:
                 max_memory_used = max(mem_usage,max_memory_used)
             return max_memory_used
 
-        max_micro_bs = max([len(profile) for profile in self.compute_profile])
+        max_micro_bs = max([len(profile) - 1 for profile in self.compute_profile])
         start = 1; end = max_micro_bs
         limit = self.gpu_memory_capacity
 
