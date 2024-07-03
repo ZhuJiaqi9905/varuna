@@ -19,7 +19,7 @@ def calculate_config(args):
     # world size in terms of number of processes
     gpus_available = args.gpus_per_server * args.nservers
     if args.nstages is None:
-        args.nstages, args.chunk_size = num_partitions(gpus_available, args.gpus_per_server, args.batch_size, args.total_gpus)
+        args.nstages, args.chunk_size = num_partitions(gpus_available, args.gpus_per_server, args.batch_size, args.node_rank)
     gpus_per_stage = (gpus_available // args.nstages) if args.gpus_per_stage == 0 else args.gpus_per_stage
     # args.gpus_per_stage = gpus_per_stage
     print(gpus_per_stage, "per stage")
@@ -78,8 +78,8 @@ def calculate_config(args):
 
     return dist_world_size, stage_to_rank_map, ranks_in_server, total_batch_size, gpus_per_stage
     
-def num_partitions(world_size, gpus_per_server, batch_size, total_gpus):
-    auto = AutoConfig(world_size, gpus_per_server, batch_size, total_gpus)
+def num_partitions(world_size, gpus_per_server, batch_size, rank):
+    auto = AutoConfig(world_size, gpus_per_server, batch_size, rank)
     num_partitions, chunk_size, time = auto.get_min()
     print("best config is:", num_partitions, chunk_size)
     print("expected time is", time, flush=True)
@@ -178,6 +178,10 @@ if __name__ == "__main__":
     args = parse_args()
     manager_ip = os.environ[HEARTBEAT_IP_ENV_VAR]
     manager_port = int(os.environ[MORPH_PORT_ENV_VAR])
+        
+    if not os.path.exists(f'/tmp/{args.node_rank}'):
+        os.mkdir(f'/tmp/{args.node_rank}')
+        os.chmod(f'/tmp/{args.node_rank}', 0o777)
 
     def handler(signum,_):
         global loop_pending

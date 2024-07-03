@@ -89,7 +89,7 @@ class CutPoint(Module):
         self.cp_func = c
 
 
-def dry_run(model, device, get_batch, from_cache):
+def dry_run(model, rank, get_batch, from_cache):
     # executes the forward pass of the module on dummy inputs. 
     # Sets the order in which modules are used and the total number of cutpoints declared.
 
@@ -149,21 +149,21 @@ def dry_run(model, device, get_batch, from_cache):
         h.remove()
 
     # TODO: move to proper temp location
-    with open("/tmp/_tmp_ord_mod",'wb') as f:
+    with open(f"/tmp/{rank}/_tmp_ord_mod",'wb') as f:
         print("create _tmp_ord_mod")
         pickle.dump(list(ordered_modules.keys()),f)
-    with open("/tmp/_tmp_inp_shapes",'wb') as f:
+    with open(f"/tmp/{rank}/_tmp_inp_shapes",'wb') as f:
         print("create _tmp_inp_shapes")
         pickle.dump(input_shapes,f)
-    with open("/tmp/_tmp_shape_changes",'wb') as f:
+    with open(f"/tmp/{rank}/_tmp_shape_changes",'wb') as f:
         print("create _tmp_shape_changes")
         pickle.dump(shape_indices_to_change,f)
 
     return ordered_modules, input_shapes, \
             shape_indices_to_change, num_cutpoints
 
-def read_dry_run_out(model):
-    with open("/tmp/_tmp_ord_mod",'rb') as f:
+def read_dry_run_out(model, rank):
+    with open(f"/tmp/{rank}/_tmp_ord_mod",'rb') as f:
         ordered_modules_keys = pickle.load(f)
 
     ordered_modules = OrderedDict()
@@ -174,9 +174,9 @@ def read_dry_run_out(model):
             modules = modules[path[i]]._modules
         ordered_modules[n] = modules[path[-1]]
 
-    with open("/tmp/_tmp_inp_shapes",'rb') as f:
+    with open(f"/tmp/{rank}/_tmp_inp_shapes",'rb') as f:
         input_shapes = pickle.load(f)
-    with open("/tmp/_tmp_shape_changes",'rb') as f:
+    with open(f"/tmp/{rank}/_tmp_shape_changes",'rb') as f:
         shape_indices_to_change = pickle.load(f)
     num_cutpoints = len(input_shapes)
     
@@ -236,24 +236,24 @@ class PartitionedModel(Module):
     def dry_run(self, get_batch, from_cache):
 
         if self.local_rank == 0 and not (from_cache and \
-            all([os.path.exists(f) for f in ["/tmp/_tmp_ord_mod","/tmp/_tmp_inp_shapes","/tmp/_tmp_shape_changes"]])):
+            all([os.path.exists(f) for f in [f"/tmp/{self.rank}/_tmp_ord_mod",f"/tmp/{self.rank}/_tmp_inp_shapes",f"/tmp/{self.rank}/_tmp_shape_changes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = dry_run(self.module, self.device, get_batch, from_cache)
+                self.num_cutpoints = dry_run(self.module, self.rank, get_batch, from_cache)
             dist.barrier()
         else:
             dist.barrier()
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = read_dry_run_out(self.module)
+                self.num_cutpoints = read_dry_run_out(self.module. self.rank)
             
-        if self.local_rank == 0 and not (from_cache and os.path.exists("/tmp/_tmp_pstage_mapping")):
+        if self.local_rank == 0 and not (from_cache and os.path.exists(f"/tmp/{self.rank}/_tmp_pstage_mapping")):
             dummy_inputs = get_batch(1, "cpu")
             # TODO: do we really need these many dry runs?
             self.trace_and_store_param_access(dummy_inputs)
             dist.barrier()
         else:
             dist.barrier()
-            with open("/tmp/_tmp_pstage_mapping", 'rb') as f:
+            with open(f"/tmp/{self.rank}/_tmp_pstage_mapping", 'rb') as f:
                 self.param_name_to_pstage = pickle.load(f)
 
     def trace_and_store_param_access(self, dummy_inputs):
@@ -317,7 +317,7 @@ class PartitionedModel(Module):
 
         self.param_name_to_pstage = param_name_to_pstage
 
-        with open("/tmp/_tmp_pstage_mapping",'wb') as f:
+        with open(f"/tmp/{self.rank}/_tmp_pstage_mapping",'wb') as f:
             pickle.dump(self.param_name_to_pstage,f)
         
     

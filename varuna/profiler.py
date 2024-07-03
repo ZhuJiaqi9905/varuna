@@ -416,15 +416,15 @@ class Profiler:
         self.dummy_inputs = dummy_inputs
         
         if self.local_rank == 0 and not (from_cache and \
-            all([os.path.exists(f) for f in ["/tmp/_tmp_ord_mod","/tmp/_tmp_inp_shapes"]])):
+            all([os.path.exists(f) for f in [f"/tmp/{self.rank}/_tmp_ord_mod",f"/tmp/{self.rank}/_tmp_inp_shapes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = dry_run(self.model, self.device, get_batch, from_cache)
+                self.num_cutpoints = dry_run(self.model, self.rank, get_batch, from_cache)
             dist.barrier()
         else:
             dist.barrier()
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = read_dry_run_out(self.model)
+                self.num_cutpoints = read_dry_run_out(self.model, self.rank)
 
     def prep_stage(self, i):
         if i < len(self.stages_to_profile):
