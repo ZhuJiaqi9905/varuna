@@ -219,7 +219,7 @@ class AutoConfig:
             print(f'i {i} mem_usage: {mem_usage}, limit: {limit}')
             if mem_usage > limit:
                 continue
-            return len(trial) - 1 - i
+            return trial[len(trial) - 1 - i]
 
         # while start < end:
         #     mid = int(math.ceil((start+end) / 2))
