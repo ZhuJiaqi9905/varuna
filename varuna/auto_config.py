@@ -208,18 +208,25 @@ class AutoConfig:
         start = 1; end = max_micro_bs
         limit = self.gpu_memory_capacity
         
-        trial = []
-        trial_i = 0
-        while int(math.pow(2, trial_i)) < max_micro_bs:
-            trial.append(int(math.pow(2, trial_i)))
-            trial_i += 1
+        # trial = []
+        # trial_i = 0
+        # while int(math.pow(2, trial_i)) < max_micro_bs:
+        #     trial.append(int(math.pow(2, trial_i)))
+        #     trial_i += 1
             
-        for i in range(len(trial)):
-            mem_usage = get_max_mem(trial[len(trial) - 1 - i])
-            print(f'{trial[len(trial) - 1 - i]} mem_usage: {mem_usage}, limit: {limit}')
+        # for i in range(len(trial)):
+        #     mem_usage = get_max_mem(trial[len(trial) - 1 - i])
+        #     print(f'{trial[len(trial) - 1 - i]} mem_usage: {mem_usage}, limit: {limit}')
+        #     if mem_usage > limit:
+        #         continue
+        #     return trial[len(trial) - 1 - i]
+            
+        for i in range(12):
+            mem_usage = get_max_mem(12 - i)
+            print(f'{12 - i} mem_usage: {mem_usage}, limit: {limit}')
             if mem_usage > limit:
                 continue
-            return trial[len(trial) - 1 - i]
+            return 12 - i
 
         # while start < end:
         #     mid = int(math.ceil((start+end) / 2))
