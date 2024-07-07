@@ -20,6 +20,8 @@ class AutoConfig:
         
         self.read_model_structure(verbose)
         self.read_profile(profile_folder, autofill_missing_compute)
+        
+        print(f'self.num_pstages: {self.num_pstages}')
 
         num_stages_candidates = [ i for i in range(2, self.num_pstages) if self.num_pstages % i == 0]
         self.batch_times = dict()
