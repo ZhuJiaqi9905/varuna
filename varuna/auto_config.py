@@ -205,20 +205,32 @@ class AutoConfig:
         print(f'max_micro_bs: {max_micro_bs}')
         start = 1; end = max_micro_bs
         limit = self.gpu_memory_capacity
-
-        while start < end:
-            mid = int(math.ceil((start+end) / 2))
-            mem_usage = get_max_mem(mid)
-            print(f'mid: {mid} mem_usage: {mem_usage}, limit: {limit}')
-            if mem_usage > limit:
-                end = mid-1
-            elif mem_usage < limit:
-                start = mid
-            else:
-                start = mid
-                end = mid
         
-        # assert start == end,f"No microbatch fits for {pp_size} partitions!"
-        if start == end:
-            return start
+        trial = []
+        trial_i = 0
+        while int(math.pow(2, trial_i)) < max_micro_bs:
+            trial.append(int(math.pow(2, trial_i)))
+            trial_i += 1
+            
+        for i in range(len(trial) - 1):
+            mem_usage = get_max_mem(trial[len(trial) - 1 - i])
+            if mem_usage > limit:
+                continue
+            return i
+
+        # while start < end:
+        #     mid = int(math.ceil((start+end) / 2))
+        #     mem_usage = get_max_mem(mid)
+        #     print(f'mid: {mid} mem_usage: {mem_usage}, limit: {limit}')
+        #     if mem_usage > limit:
+        #         end = mid-1
+        #     elif mem_usage < limit:
+        #         start = mid
+        #     else:
+        #         start = mid
+        #         end = mid
+        
+        # # assert start == end,f"No microbatch fits for {pp_size} partitions!"
+        # if start == end:
+        #     return start
         return -1
