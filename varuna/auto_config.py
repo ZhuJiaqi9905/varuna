@@ -37,7 +37,7 @@ class AutoConfig:
             # get highest micro batch for each num_stage_cand
             mbs = self.get_microbatch_size(pp_size)
             print(f"Predicted microbatch size for {pp_size}: {mbs}")
-            if mbs < 0:
+            if mbs <= 0:
                 continue
             self.micro_batch[pp_size] = mbs
             dp_size = num_gpus // pp_size
