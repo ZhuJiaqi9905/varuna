@@ -5,8 +5,9 @@ import pickle
 #     print(data)
 #     print(len(data))
 
-with open(f"/mnt/gpu-91/varuna/profile_rank_0/_tmp_inp_shapes",'rb') as f:
-    input_shapes = pickle.load(f)
-    input_shapes_keys = list(input_shapes.keys())
-    input_shapes_res = [input_shapes[k][0] for k in input_shapes_keys]
-    print(input_shapes_res, len(input_shapes_res) + 1)
+for i in range(0, 8):
+    with open(f"/mnt/gpu-91/varuna/profile_rank_{i}/_tmp_inp_shapes",'rb') as f:
+        input_shapes = pickle.load(f)
+        input_shapes_keys = list(input_shapes.keys())
+        input_shapes_res = [input_shapes[k][0] for k in input_shapes_keys]
+        print(input_shapes_res, len(input_shapes_res) + 1)
