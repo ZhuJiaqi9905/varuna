@@ -30,7 +30,7 @@ import time
 
 Module = nn.Module
 
-log_verbose = True
+log_verbose = False
 
 TASK = ["fwd", "rec", "bwd"]
     
