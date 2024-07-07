@@ -216,9 +216,10 @@ class AutoConfig:
             
         for i in range(len(trial) - 1):
             mem_usage = get_max_mem(trial[len(trial) - 1 - i])
+            print(f'i {i} mem_usage: {mem_usage}, limit: {limit}')
             if mem_usage > limit:
                 continue
-            return i
+            return len(trial) - 1 - i
 
         # while start < end:
         #     mid = int(math.ceil((start+end) / 2))
