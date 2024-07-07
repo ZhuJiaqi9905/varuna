@@ -199,12 +199,12 @@ if __name__ == "__main__":
                                     stdout=out_file,
                                     stderr=err_file))
     # wait for all processes
-    # try:
-    #     for process in processes:
-    #         process.wait()
-    #         print("Process done with return code", process.returncode)
-    #         if process.returncode != 0:
-    #             for p in processes:
-    #                 p.kill()
-    # except Exception as e:
-    #     print("run_varuna subprocesses quit with error:", e)
+    try:
+        for process in processes:
+            process.wait()
+            print("Process done with return code", process.returncode)
+            if process.returncode != 0:
+                for p in processes:
+                    p.kill()
+    except Exception as e:
+        print("run_varuna subprocesses quit with error:", e)
