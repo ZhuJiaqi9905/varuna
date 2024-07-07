@@ -214,9 +214,9 @@ class AutoConfig:
             trial.append(int(math.pow(2, trial_i)))
             trial_i += 1
             
-        for i in range(len(trial) - 1):
+        for i in range(len(trial)):
             mem_usage = get_max_mem(trial[len(trial) - 1 - i])
-            print(f'i {i} mem_usage: {mem_usage}, limit: {limit}')
+            print(f'{trial[len(trial) - 1 - i]} mem_usage: {mem_usage}, limit: {limit}')
             if mem_usage > limit:
                 continue
             return trial[len(trial) - 1 - i]
