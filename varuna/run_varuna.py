@@ -132,7 +132,7 @@ if __name__ == "__main__":
         reachable_machines = [m for m in reachable_machines if len(m) > 0]  
         with open(running_machines_list, "w") as of:
             of.write(content)
-    print(reachable_machines)  
+    print(reachable_machines)
     
     reachable_count = len(reachable_machines)
     if reachable_count == 0:
@@ -172,6 +172,9 @@ if __name__ == "__main__":
     current_env[HEARTBEAT_PORT_ENV_VAR] = str(HEARTBEAT_PORT)
     current_env[MORPH_PORT_ENV_VAR] = str(MORPH_PORT)
    # current_env["PATH"] = "PATH=\"/home/varuna/anaconda3/bin:$PATH\""
+   
+    with open('run_varu.log', 'w') as f:
+        f.write(f'reachable_count: {reachable_count}, reachable_machines {reachable_machines}')
     
     processes = []
     for i,machine in enumerate(reachable_machines):
