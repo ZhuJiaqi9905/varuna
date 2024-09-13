@@ -116,8 +116,6 @@ def dry_run(model, rank, get_batch, from_cache):
         hooks.append( module.register_forward_hook(get_hook(name)))
         if isinstance(module, CutPoint):
             num_cutpoints += 1
-
-    print("Num cutpoints is", num_cutpoints)
     
     # TODO: do this extra compute on GPU? large models...
     model(**dummy_inputs)
@@ -125,7 +123,6 @@ def dry_run(model, rank, get_batch, from_cache):
     input_shapes = dict()
     del dummy_inputs
     dummy_inputs_2 = get_batch(2, device='cpu')
-    print(f'prepare dummy inputs')
     model(**dummy_inputs_2)
     input_shapes_2 = input_shapes
     input_shapes = input_shapes_1
@@ -380,6 +377,8 @@ class PartitionedModel(Module):
 
         self.forward_input_shapes = []
         self.backward_grad_shapes = []
+        
+        print(f'self.input_shapes: {self.input_shapes}')
 
         for name in modules:
             module = modules[name]
@@ -388,6 +387,7 @@ class PartitionedModel(Module):
             if isinstance(module, CutPoint):
                 if (index % self.cuts_per_stage == 0):
                     # pre cp
+                    print(f'assigned_index: {assigned_index}, self.stage: {self.stage}, name: {name}')
                     if assigned_index == self.stage:
                         self.forward_input_shapes = self.input_shapes[name]
                         self.fwd_inp_shape_changes = self.shape_indices_to_change[name]

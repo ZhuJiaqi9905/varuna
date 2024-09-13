@@ -252,7 +252,6 @@ if __name__ == "__main__":
         cmd.append("--local_rank={}".format(str(local_rank)))
         cmd.append("--stage_to_rank_map={}".format(stage_to_rank_map_str))
         cmd.append("--batch-size={}".format(str(per_process_batch_size)))
-        cmd.append("--checkpoint-activations")
 
         cmd.extend(args.training_script_args)
         print(" ".join(cmd), flush=True)
