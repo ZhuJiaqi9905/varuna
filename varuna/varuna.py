@@ -544,7 +544,7 @@ class Varuna(Module):
                     recv_weight.grad.add_(send_weight.grad)
                     send_weight.grad.data.copy_(recv_weight.grad.data)
                 continue
-            if send_weight.grad.data is None:
+            if send_weight.grad is None:
                 continue
             if self.stage == send_stage:
                 dist.all_reduce(send_weight.grad.data, group=self.tied_group)
