@@ -280,7 +280,7 @@ class Varuna(Module):
         self.pipeline = Pipeline(batches, self.model, self.config, self.schedule, self.optimizer, verbose=log_verbose)
         print("before pipe run")
         self.average_loss, fwd_time = self.pipeline.run()
-        print("after pipeline run")
+        print(f"after pipeline run {fwd_time}")
         if log_verbose:
             print(f'{self.stage} {self.rank_within_stage} going to share embedding grads')
         
