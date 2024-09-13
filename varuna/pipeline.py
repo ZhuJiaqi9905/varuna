@@ -223,7 +223,7 @@ class Pipeline:
     def worker(self, task, grad_mode, inputs_as_dict):
         """ Main body of worker loop """
         # forward
-        start_time = time.clock_gettime_ns()
+        start_time = time.time()
         if task == 0:
             torch.set_grad_enabled(grad_mode)
             if torch.cuda.is_available():
@@ -239,7 +239,7 @@ class Pipeline:
             if grad_mode == True:
                 # save loss and input activations for the backward pass to use
                 self.loss = output[0] if isinstance(output,tuple) else output
-            end_time = time.clock_gettime_ns()
+            end_time = time.time()
             print(f'forward time: {end_time - start_time}')
         # recompute
         elif task == 1:
@@ -249,7 +249,7 @@ class Pipeline:
         
         # backward
         else:
-            start_time = time.clock_gettime_ns()
+            start_time = time.time()
             grads = torch.ones(self.loss.size(), dtype = torch.float32).to(self.device)
 
             if self.stage == self.partitions - 1:
@@ -266,7 +266,7 @@ class Pipeline:
 
             del self.loss
             self.loss = None
-            end_time = time.clock_gettime_ns()
+            end_time = time.time()
             print(f'backward time: {end_time - start_time}')
         
     def run(self):
