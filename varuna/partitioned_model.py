@@ -3,6 +3,7 @@ import torch.distributed as dist
 from torch.nn import Module
 
 import os, sys
+import resource
 import inspect
 import time
 import pickle
@@ -88,8 +89,23 @@ class CutPoint(Module):
         c = CutpointFunction()
         self.cp_func = c
 
+def get_memory():
+    with open('/proc/meminfo', 'r') as mem:
+        free_memory = 0
+        for i in mem:
+            sline = i.split()
+            if str(sline[0]) in ('MemFree:', 'Buffers:', 'Cached:'):
+                free_memory += int(sline[1])
+    return free_memory  # KiB
+
+def memory_limit(ratio):
+    """Limit max memory usage to half."""
+    soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+    # Convert KiB to bytes, and divide in two to half
+    resource.setrlimit(resource.RLIMIT_AS, (int(get_memory() * 1024 * ratio), hard))
 
 def dry_run(model, rank, get_batch, from_cache):
+    memory_limit(0.85)
     # executes the forward pass of the module on dummy inputs. 
     # Sets the order in which modules are used and the total number of cutpoints declared.
 
@@ -231,6 +247,7 @@ class PartitionedModel(Module):
 
 
     def dry_run(self, get_batch, from_cache):
+        
 
         if self.local_rank == 0 and not (from_cache and \
             all([os.path.exists(f) for f in [f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_ord_mod",f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_inp_shapes",f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_shape_changes"]])):
