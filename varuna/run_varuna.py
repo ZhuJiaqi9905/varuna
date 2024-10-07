@@ -112,6 +112,9 @@ def parse_args():
                         "Defaults to path from which launched.")
     parser.add_argument("--resume", action="store_true", 
                         help="Resume a varuna run.")
+    
+    parser.add_argument("--log_dir", type=str, default="ssh_logs",
+                        help="Directory to store logs of training processes")
 
     parser.add_argument("training_script", type=str, default=None, nargs='?',
                         help="The full path to the single GPU training "
@@ -166,7 +169,7 @@ if __name__ == "__main__":
             f.write(launch_cmd_format)
 
     master_addr = reachable_machines[0].split(":")[0]
-    os.makedirs("ssh_logs", exist_ok=True)
+    os.makedirs(args.log_dir, exist_ok=True)
     current_env = os.environ.copy()
     current_env[HEARTBEAT_IP_ENV_VAR] = str(args.manager_ip)
     current_env[HEARTBEAT_PORT_ENV_VAR] = str(HEARTBEAT_PORT)
@@ -179,8 +182,8 @@ if __name__ == "__main__":
     processes = []
     for i,machine in enumerate(reachable_machines):
         launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr)
-        out_file = open(f"ssh_logs/ssh_out_{i}.log", "w")
-        err_file = open(f"ssh_logs/ssh_err_{i}.log", "w")
+        out_file = open(f"{args.log_dir}/ssh_out_{i}.log", "w")
+        err_file = open(f"{args.log_dir}/ssh_err_{i}.log", "w")
         machine_addr = machine.split(":")[0]
         machine_port = machine.split(":")[1]
         if machine_addr == "127.0.0.1":
