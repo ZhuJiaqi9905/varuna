@@ -117,6 +117,7 @@ def parse_args():
     parser = ArgumentParser(description="Varuna training launch "
                                         "helper utilty that will spawn up "
                                         "multiple distributed processes")
+    parser.add_argument("--gpuid", type=int, default=0, help="The GPU ID to use.")
     parser.add_argument("--gpus_per_server", type=int, default=1,
                         help="The desired number of GPUs per server. Each process can be bound to a single GPU.")
     parser.add_argument("--total_gpus", type=int, default=16,
@@ -239,6 +240,7 @@ if __name__ == "__main__":
         # each process's rank
         current_env["RANK"] = str(rank)
         current_env["LOCAL_RANK"] = str(local_rank)
+        current_env["GPUID"] = str(args.gpuid)
         current_env["GLOO_SOCKET_IFNAME"] = 'enp216s0np0'
 
         # spawn the processes
@@ -247,6 +249,7 @@ if __name__ == "__main__":
 
         per_process_batch_size = total_batch_size // gpus_per_stage
 
+        cmd.append("--gpuid={}".format(str(args.gpuid)))
         cmd.append("--rank={}".format(str(rank)))
         cmd.append("--chunk_size={}".format(str(args.chunk_size)))
         cmd.append("--local_rank={}".format(str(local_rank)))

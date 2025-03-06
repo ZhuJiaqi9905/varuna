@@ -50,6 +50,7 @@ def get_launch_cmd_format(args):
     launch_cmd = [sys.executable]
     if args.nstages is not None:
         launch_cmd.append(f" -u -m varuna.launcher" \
+            +  " --gpuid {}"
             +  f" --gpus_per_server {args.gpus_per_node}  " \
             +  f" --total_gpus {args.total_gpus}  " \
             +  " --node_rank {} --nservers {} --master_addr {}"
@@ -58,6 +59,7 @@ def get_launch_cmd_format(args):
         launch_cmd.append(args.training_script)
     else:
         launch_cmd.append(f" -u -m varuna.launcher" \
+            +  " --gpuid {}"
             +  f" --total_gpus {args.total_gpus}  " \
             +  f" --gpus_per_server {args.gpus_per_node}  " \
             +  " --node_rank {} --nservers {} --master_addr {}"
@@ -181,18 +183,17 @@ if __name__ == "__main__":
     
     processes = []
     for i,machine in enumerate(reachable_machines):
-        launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr)
+        machine_addr = machine.split(":")[0]
+        gpuid = machine.split(":")[1]
+        launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr, gpuid)
         out_file = open(f"{args.log_dir}/ssh_out_{i}.log", "w")
         err_file = open(f"{args.log_dir}/ssh_err_{i}.log", "w")
-        machine_addr = machine.split(":")[0]
-        machine_port = machine.split(":")[1]
         if machine_addr == "127.0.0.1":
             cmd = launch_cmd.split(" ")
             cmd = [x_ for x_ in cmd if x_ != ""]
             # print("launch cmd is ", cmd)
         else:
             cmd = ["ssh"]
-            cmd.append(f"-p {machine_port}")
             cmd.append(machine_addr)
             cmd.append(f"echo \"{launch_cmd}\" > launch_varuna.sh; ")
             cmd.append(f"{HEARTBEAT_IP_ENV_VAR}={args.manager_ip}") 
