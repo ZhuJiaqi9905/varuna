@@ -187,9 +187,9 @@ def read_dry_run_out(model, rank, device):
             modules = modules[path[i]]._modules
         ordered_modules[n] = modules[path[-1]]
 
-    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_inp_shapes",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank - device}/_tmp_inp_shapes",'rb') as f:
         input_shapes = pickle.load(f)
-    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_shape_changes",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank - device}/_tmp_shape_changes",'rb') as f:
         shape_indices_to_change = pickle.load(f)
     num_cutpoints = len(input_shapes)
     
