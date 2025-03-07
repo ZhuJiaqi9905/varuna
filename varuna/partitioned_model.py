@@ -262,14 +262,14 @@ class PartitionedModel(Module):
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
                 self.num_cutpoints = read_dry_run_out(self.module, self.rank, self.device_id)
             
-        if self.local_rank == 0 and not (from_cache and os.path.exists(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
+        if self.device_id == 0 and not (from_cache and os.path.exists(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
             dummy_inputs = get_batch(1, "cpu")
             # TODO: do we really need these many dry runs?
             self.trace_and_store_param_access(dummy_inputs)
             dist.barrier()
         else:
             dist.barrier()
-            with open(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping", 'rb') as f:
+            with open(f"/mnt/varuna/profile_rank_{self.rank - self.rank % self.device_id}/_tmp_pstage_mapping", 'rb') as f:
                 self.param_name_to_pstage = pickle.load(f)
 
     def trace_and_store_param_access(self, dummy_inputs):
