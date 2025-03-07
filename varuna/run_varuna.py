@@ -137,7 +137,8 @@ if __name__ == "__main__":
         reachable_machines = [m for m in reachable_machines if len(m) > 0]  
         with open(running_machines_list, "w") as of:
             of.write(content)
-    print(reachable_machines)
+    with open('run_varu.log', 'w') as f:
+        f.write(f'reachable_machines: {reachable_machines}\n')
     
     reachable_count = len(reachable_machines)
     if reachable_count == 0:
@@ -178,8 +179,8 @@ if __name__ == "__main__":
     current_env[MORPH_PORT_ENV_VAR] = str(MORPH_PORT)
    # current_env["PATH"] = "PATH=\"/home/varuna/anaconda3/bin:$PATH\""
    
-    with open('run_varu.log', 'w') as f:
-        f.write(f'reachable_count: {reachable_count}, reachable_machines {reachable_machines}')
+    with open('run_varu.log', 'a') as f:
+        f.write(f'reachable_count: {reachable_count}, reachable_machines {reachable_machines}\n')
     
     processes = []
     for i,machine in enumerate(reachable_machines):
@@ -201,6 +202,8 @@ if __name__ == "__main__":
             cmd.append(get_env_vars(args.env_file))
             cmd.append(f"bash /workspace/Megatron-LM-varuna/launch_varuna_{gpuid}.sh")
             print(" ".join(cmd ))
+            with open('run_varu.log', 'a') as f:
+                f.write(f'i: {i}, machine: {machine}, cmd: {cmd}\n')
        
         processes.append(subprocess.Popen(cmd, env=current_env, 
                                     stdout=out_file,

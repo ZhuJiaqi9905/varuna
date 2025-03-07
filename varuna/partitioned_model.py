@@ -175,8 +175,8 @@ def dry_run(model, rank, get_batch, from_cache):
     return ordered_modules, input_shapes, \
             shape_indices_to_change, num_cutpoints
 
-def read_dry_run_out(model, rank):
-    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_ord_mod",'rb') as f:
+def read_dry_run_out(model, rank, device):
+    with open(f"/mnt/varuna/profile_rank_{rank - rank % device}/_tmp_ord_mod",'rb') as f:
         ordered_modules_keys = pickle.load(f)
 
     ordered_modules = OrderedDict()
@@ -206,6 +206,7 @@ class PartitionedModel(Module):
         self.stage_to_rank_map = stage_to_rank_map
         self.rank = rank
         self.local_rank = local_rank
+        self.device = device
         self.fp16 = fp16
         self.shared_weights = shared_weights
         
@@ -250,7 +251,7 @@ class PartitionedModel(Module):
     def dry_run(self, get_batch, from_cache):
         
 
-        if self.local_rank == 0 and not (from_cache and \
+        if self.device == 0 and not (from_cache and \
             all([os.path.exists(f) for f in [f"/mnt/varuna/profile_rank_{self.rank}/_tmp_ord_mod",f"/mnt/varuna/profile_rank_{self.rank}/_tmp_inp_shapes",f"/mnt/varuna/profile_rank_{self.rank}/_tmp_shape_changes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
@@ -259,7 +260,7 @@ class PartitionedModel(Module):
         else:
             dist.barrier()
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
-                self.num_cutpoints = read_dry_run_out(self.module, self.rank)
+                self.num_cutpoints = read_dry_run_out(self.module, self.rank, self.device)
             
         if self.local_rank == 0 and not (from_cache and os.path.exists(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
             dummy_inputs = get_batch(1, "cpu")
