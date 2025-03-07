@@ -142,7 +142,7 @@ def parse_args():
     # parser.add_argument("--total_num_stages", required=True, type=int,
     #                     help="The total number of potential stages/partitions the model is divided into")
     
-    parser.add_argument("--master_addr", default="172.21.0.91", type=str,
+    parser.add_argument("--master_addr", default="172.31.44.99", type=str,
                         help="Master node (rank 0)'s address, should be either "
                              "the IP address or the hostname of node 0, for "
                              "single node multi-proc training, the "
@@ -180,9 +180,9 @@ if __name__ == "__main__":
     manager_ip = os.environ[HEARTBEAT_IP_ENV_VAR]
     manager_port = int(os.environ[MORPH_PORT_ENV_VAR])
         
-    if not os.path.exists(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}'):
-        os.mkdir(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}')
-        os.chmod(f'/mnt/gpu-91/varuna/profile_rank_{args.node_rank}', 0o777)
+    if not os.path.exists(f'/mnt/varuna/profile_rank_{args.node_rank}'):
+        os.makedirs(f'/mnt/varuna/profile_rank_{args.node_rank}', exist_ok=True)
+        os.chmod(f'/mnt/varuna/profile_rank_{args.node_rank}', 0o777)
 
     def handler(signum,_):
         global loop_pending
@@ -241,7 +241,9 @@ if __name__ == "__main__":
         current_env["RANK"] = str(rank)
         current_env["LOCAL_RANK"] = str(local_rank)
         current_env["GPUID"] = str(args.gpuid)
-        current_env["GLOO_SOCKET_IFNAME"] = 'enp216s0np0'
+        current_env["NCCL_SOCKET_IFNAME"] = 'ens5'
+        current_env["GLOO_SOCKET_IFNAME"] = 'ens5'
+        current_env["LD_PRELOAD"] = "/usr/local/cuda-11.7/efa/lib/libnccl-net.so"
 
         # spawn the processes
         cmd = [sys.executable, "-u"]

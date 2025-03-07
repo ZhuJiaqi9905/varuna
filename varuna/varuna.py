@@ -111,14 +111,17 @@ class Varuna(Module):
         #     val = dummy_inputs[key]
         #     if isinstance(val, torch.Tensor) and val.is_cuda:
         #         dummy_inputs[key] = val.cpu()
+        
+        torch.cuda.set_device(device)
+        self.device = torch.device("cuda", device)
 
-        if device == -1:
-            device = self.local_rank
-        if device == "cpu":
-            self.device = torch.device("cpu")
-        else:
-            torch.cuda.set_device(device)
-            self.device = torch.device("cuda", device)
+        # if device == -1:
+        #     device = self.local_rank
+        # if device == "cpu":
+        #     self.device = torch.device("cpu")
+        # else:
+        #     torch.cuda.set_device(device)
+        #     self.device = torch.device("cuda", device)
 
         self.optimizer = None
         self.fp16 = fp16

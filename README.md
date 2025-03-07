@@ -18,7 +18,7 @@ gpu-91的varu-0是master。
 
 ```
 python setup.py install
-cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
+cp varuna/genschedule /home/ubuntu/.local/lib/python3.8/site-packages/varuna-0.0.1-py3.6.egg/varuna/
 ```
 
 `start_container.sh`里面是启动容器的脚本。
@@ -40,7 +40,7 @@ pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp
 
 训练的log在`ssh_logs`文件夹里。
 
-`/mnt/gpu-91`是共享存储。varuna中数据集和checkpoint都需要写在共享存储里面。
+`/mnt`是共享存储。varuna中数据集和checkpoint都需要写在共享存储里面。
 
 varuna只能用gloo后端。
 
@@ -49,7 +49,7 @@ varuna只能用gloo后端。
 - 如果改了varuna的代码之后，需要运行：
 ```
 python setup.py install
-cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
+cp varuna/genschedule /home/ubuntu/.local/lib/python3.8/site-packages/varuna-0.0.1-py3.6.egg/varuna/
 ```
 
 - 如果gloo连接建不起来，查看一下`/etc/hosts`文件：需要把主机名和ip地址配对。不能用127.0.0.1
@@ -84,7 +84,7 @@ pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp
 To install, clone this repository, cd into it and run
 ~~~~
 python setup.py install
-cp varuna/genschedule /opt/conda/lib/python3.6/site-packages/varuna-0.0.1-py3.6.egg/varuna/
+cp varuna/genschedule /home/ubuntu/.local/lib/python3.8/site-packages/varuna-0.0.1-py3.6.egg/varuna/
 ~~~~
 ## Running
 

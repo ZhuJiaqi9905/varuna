@@ -24,7 +24,7 @@ class CutPoint(Module):
         self.device = None
         self.send_fn = self.recv_fn = None
         self.stage = -1
-        self.fp16 = False
+        self.fp16 = True
         self.pruning = False
         self.barrier_event = None
         self.boundary_func = None
@@ -162,13 +162,13 @@ def dry_run(model, rank, get_batch, from_cache):
         h.remove()
 
     # TODO: move to proper temp location
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_ord_mod",'wb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_ord_mod",'wb') as f:
         print("create _tmp_ord_mod")
         pickle.dump(list(ordered_modules.keys()),f)
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_inp_shapes",'wb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_inp_shapes",'wb') as f:
         print("create _tmp_inp_shapes")
         pickle.dump(input_shapes,f)
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_shape_changes",'wb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_shape_changes",'wb') as f:
         print("create _tmp_shape_changes")
         pickle.dump(shape_indices_to_change,f)
 
@@ -176,7 +176,7 @@ def dry_run(model, rank, get_batch, from_cache):
             shape_indices_to_change, num_cutpoints
 
 def read_dry_run_out(model, rank):
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_ord_mod",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_ord_mod",'rb') as f:
         ordered_modules_keys = pickle.load(f)
 
     ordered_modules = OrderedDict()
@@ -187,9 +187,9 @@ def read_dry_run_out(model, rank):
             modules = modules[path[i]]._modules
         ordered_modules[n] = modules[path[-1]]
 
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_inp_shapes",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_inp_shapes",'rb') as f:
         input_shapes = pickle.load(f)
-    with open(f"/mnt/gpu-91/varuna/profile_rank_{rank}/_tmp_shape_changes",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank}/_tmp_shape_changes",'rb') as f:
         shape_indices_to_change = pickle.load(f)
     num_cutpoints = len(input_shapes)
     
@@ -243,6 +243,7 @@ class PartitionedModel(Module):
         print("dry run time", time.time() - start)
         self.prep_cutpoints()
         self.remove_unused_parameters()
+        print("after initialize")
         self.model_pruned = True
 
 
@@ -250,7 +251,7 @@ class PartitionedModel(Module):
         
 
         if self.local_rank == 0 and not (from_cache and \
-            all([os.path.exists(f) for f in [f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_ord_mod",f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_inp_shapes",f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_shape_changes"]])):
+            all([os.path.exists(f) for f in [f"/mnt/varuna/profile_rank_{self.rank}/_tmp_ord_mod",f"/mnt/varuna/profile_rank_{self.rank}/_tmp_inp_shapes",f"/mnt/varuna/profile_rank_{self.rank}/_tmp_shape_changes"]])):
 
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
                 self.num_cutpoints = dry_run(self.module, self.rank, get_batch, from_cache)
@@ -260,14 +261,14 @@ class PartitionedModel(Module):
             self.ordered_modules, self.input_shapes, self.shape_indices_to_change, \
                 self.num_cutpoints = read_dry_run_out(self.module, self.rank)
             
-        if self.local_rank == 0 and not (from_cache and os.path.exists(f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
+        if self.local_rank == 0 and not (from_cache and os.path.exists(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping")):
             dummy_inputs = get_batch(1, "cpu")
             # TODO: do we really need these many dry runs?
             self.trace_and_store_param_access(dummy_inputs)
             dist.barrier()
         else:
             dist.barrier()
-            with open(f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping", 'rb') as f:
+            with open(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping", 'rb') as f:
                 self.param_name_to_pstage = pickle.load(f)
 
     def trace_and_store_param_access(self, dummy_inputs):
@@ -331,7 +332,7 @@ class PartitionedModel(Module):
 
         self.param_name_to_pstage = param_name_to_pstage
 
-        with open(f"/mnt/gpu-91/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping",'wb') as f:
+        with open(f"/mnt/varuna/profile_rank_{self.rank}/_tmp_pstage_mapping",'wb') as f:
             pickle.dump(self.param_name_to_pstage,f)
         
     
@@ -387,6 +388,7 @@ class PartitionedModel(Module):
             cutpoint.set_cp_func()
 
         self.cuts_per_stage = (self.num_cutpoints + 1) // self.num_stages
+        print(f'self.cuts_per_stage: {self.cuts_per_stage}, self.num_cutpoints: {self.num_cutpoints}, self.num_stages: {self.num_stages}')
 
         modules = self.ordered_modules
         index = 1
@@ -404,7 +406,7 @@ class PartitionedModel(Module):
             if isinstance(module, CutPoint):
                 if (index % self.cuts_per_stage == 0):
                     # pre cp
-                    print(f'assigned_index: {assigned_index}, self.stage: {self.stage}, name: {name}')
+                    print(f'assigned_index: {assigned_index}, self.stage: {self.stage}, name: {name}, module: {module}')
                     if assigned_index == self.stage:
                         self.forward_input_shapes = self.input_shapes[name]
                         self.fwd_inp_shape_changes = self.shape_indices_to_change[name]
@@ -426,6 +428,8 @@ class PartitionedModel(Module):
 
         pre_cp_index = self.stage
         post_cp_index = self.stage + 1
+        
+        print(f'pre_cp_index: {pre_cp_index}, post_cp_index: {post_cp_index}')
 
         is_used = {}
         used_modules = []

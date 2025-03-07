@@ -240,7 +240,7 @@ class Pipeline:
                 # save loss and input activations for the backward pass to use
                 self.loss = output[0] if isinstance(output,tuple) else output
             end_time = time.time()
-            print(f'forward time: {end_time - start_time}')
+            # print(f'forward time: {end_time - start_time}')
         # recompute
         elif task == 1:
             torch.set_grad_enabled(True)
@@ -267,7 +267,7 @@ class Pipeline:
             del self.loss
             self.loss = None
             end_time = time.time()
-            print(f'backward time: {end_time - start_time}')
+            # print(f'backward time: {end_time - start_time}')
         
     def run(self):
         if self.verbose:

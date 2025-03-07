@@ -185,7 +185,7 @@ if __name__ == "__main__":
     for i,machine in enumerate(reachable_machines):
         machine_addr = machine.split(":")[0]
         gpuid = machine.split(":")[1]
-        launch_cmd = launch_cmd_format.format(i, reachable_count, master_addr, gpuid)
+        launch_cmd = launch_cmd_format.format(gpuid, i, reachable_count, master_addr)
         out_file = open(f"{args.log_dir}/ssh_out_{i}.log", "w")
         err_file = open(f"{args.log_dir}/ssh_err_{i}.log", "w")
         if machine_addr == "127.0.0.1":
@@ -194,12 +194,12 @@ if __name__ == "__main__":
             # print("launch cmd is ", cmd)
         else:
             cmd = ["ssh"]
-            cmd.append(machine_addr)
-            cmd.append(f"echo \"{launch_cmd}\" > launch_varuna.sh; ")
+            cmd.append(f'ubuntu@{machine_addr}')
+            cmd.append(f"echo \"{launch_cmd}\" > /workspace/Megatron-LM-varuna/launch_varuna_{gpuid}.sh; ")
             cmd.append(f"{HEARTBEAT_IP_ENV_VAR}={args.manager_ip}") 
             cmd.append(f"{MORPH_PORT_ENV_VAR}={MORPH_PORT} {HEARTBEAT_PORT_ENV_VAR}={HEARTBEAT_PORT}")
             cmd.append(get_env_vars(args.env_file))
-            cmd.append("bash launch_varuna.sh")
+            cmd.append(f"bash /workspace/Megatron-LM-varuna/launch_varuna_{gpuid}.sh")
             print(" ".join(cmd ))
        
         processes.append(subprocess.Popen(cmd, env=current_env, 
