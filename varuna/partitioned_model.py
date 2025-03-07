@@ -176,7 +176,7 @@ def dry_run(model, rank, get_batch, from_cache):
             shape_indices_to_change, num_cutpoints
 
 def read_dry_run_out(model, rank, device):
-    with open(f"/mnt/varuna/profile_rank_{rank - rank % device}/_tmp_ord_mod",'rb') as f:
+    with open(f"/mnt/varuna/profile_rank_{rank - device}/_tmp_ord_mod",'rb') as f:
         ordered_modules_keys = pickle.load(f)
 
     ordered_modules = OrderedDict()
@@ -269,7 +269,7 @@ class PartitionedModel(Module):
             dist.barrier()
         else:
             dist.barrier()
-            with open(f"/mnt/varuna/profile_rank_{self.rank - self.rank % self.device_id}/_tmp_pstage_mapping", 'rb') as f:
+            with open(f"/mnt/varuna/profile_rank_{self.rank - self.device_id}/_tmp_pstage_mapping", 'rb') as f:
                 self.param_name_to_pstage = pickle.load(f)
 
     def trace_and_store_param_access(self, dummy_inputs):
