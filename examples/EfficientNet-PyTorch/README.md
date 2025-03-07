@@ -39,4 +39,4 @@ Running on 1 GPU on a single machine:
 
 In each case, the model should train for one epoch (hard-coded to 10 steps) and then run validation.
 
-Output and error logs are created in the folder `ssh_logs/`
+Output and error logs are created in the folder `res/ssh_logs/`

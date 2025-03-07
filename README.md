@@ -38,7 +38,7 @@ pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp
 
 在available_machines.out文件中指定node，会在训练时作为跑模型的node。
 
-训练的log在`ssh_logs`文件夹里。
+训练的log在`res/ssh_logs`文件夹里。
 
 `/mnt`是共享存储。varuna中数据集和checkpoint都需要写在共享存储里面。
 

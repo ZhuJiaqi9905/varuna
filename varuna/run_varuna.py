@@ -115,7 +115,7 @@ def parse_args():
     parser.add_argument("--resume", action="store_true", 
                         help="Resume a varuna run.")
     
-    parser.add_argument("--log_dir", type=str, default="ssh_logs",
+    parser.add_argument("--log_dir", type=str, default="res/ssh_logs",
                         help="Directory to store logs of training processes")
 
     parser.add_argument("training_script", type=str, default=None, nargs='?',

@@ -13,16 +13,16 @@ master_addr=${reachable_machines[0]}
 echo "master_addr: $master_addr"
 
 cd /home/varuna/t-saathl/Varuna/Megatron-LM/
-mkdir -p ssh_logs
+mkdir -p res/ssh_logs
 
 i=0
 while [ $i -lt $num_servers ]
 do
     map="$i ${reachable_machines[i]}"
     echo $map
-    # date > ssh_logs/my_ssh_err_$i
-    # date > ssh_logs/my_ssh_out_$i
-    # echo "$num_servers $i $master_addr" >> ssh_logs/my_ssh_err_$i
+    # date > res/ssh_logs/my_ssh_err_$i
+    # date > res/ssh_logs/my_ssh_out_$i
+    # echo "$num_servers $i $master_addr" >> res/ssh_logs/my_ssh_err_$i
     r=0
     while [ $r -lt $replicas ]
     do
