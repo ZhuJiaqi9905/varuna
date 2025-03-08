@@ -318,6 +318,6 @@ class Pipeline:
         if self.pipeline_group is not None:
             torch.distributed.barrier(group=self.pipeline_group)
         self.close_comm_threads()
-        dist.barrier()
+        # dist.barrier()
         return self.average_loss, self.avg_fwd_time
         

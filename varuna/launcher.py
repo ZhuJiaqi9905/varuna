@@ -249,7 +249,7 @@ if __name__ == "__main__":
         cmd = [sys.executable, "-u"]
         cmd.append(args.training_script)
 
-        per_process_batch_size = total_batch_size // gpus_per_stage
+        per_process_batch_size = total_batch_size
 
         cmd.append("--gpuid={}".format(str(args.gpuid)))
         cmd.append("--rank={}".format(str(rank)))
